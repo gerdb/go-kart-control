@@ -1,0 +1,14 @@
+# Generate .pot file from Java sources
+
+echo  > ../lang/messages.pot
+
+find ../src/com/sebulli/gokart/ -iname "*.java" -exec \
+	xgettext  -C -j -o ../lang/messages.pot \
+		--msgid-bugs-address=emailATsebulli.com \
+		--copyright-holder="Gerd Bartelt" \
+		--from-code="UTF-8" \
+		--add-comments=T: \
+		--keyword=_:1 \
+		--keyword=_:1,2c \
+		{} \;
+echo "done !"

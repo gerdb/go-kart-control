@@ -1,0 +1,46 @@
+# Configuration file for Go-kart control
+
+
+# Set the language and country. Eg. da_DK.
+# Leave it empty to use the system settings
+locale :
+
+# Set serial port
+# For Windows it's something like COM1. See device manager.
+# For Linux it's something like /dev/ttyUSB0. 
+port : /dev/ttyUSB0
+
+# Amount of panels
+panels.amount : 5
+
+# Configure each panel
+# .name Name of the panel
+# .id   Radio ID
+# .x    X-position
+# .y    Y-position
+
+panels.1.name : 101
+panels.1.id   : 1
+panels.1.x    : 30
+panels.1.y    : 420
+
+panels.2.name : 102
+panels.2.id   : 2
+panels.2.x    : 690
+panels.2.y    : 380
+
+panels.3.name : 103
+panels.3.id   : 3
+panels.3.x    : 450
+panels.3.y    : 300
+
+panels.4.name : 104
+panels.4.id   : 4
+panels.4.x    : 230
+panels.4.y    : 5
+
+panels.5.name : 105
+panels.5.id   : 5
+panels.5.x    : 140
+panels.5.y    : 320
+

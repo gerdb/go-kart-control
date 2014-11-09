@@ -1,8 +1,6 @@
 /**
  *  Project     Go-Kart Control
- *  @file		ImagePanel.java
  *  @author		Gerd Bartelt - www.sebulli.com
- *  @brief		Panel with image background
  *
  *  @copyright	GPL3
  *
@@ -21,7 +19,6 @@
  *
  */
 
-
 package com.sebulli.gokart.gui;
 
 import java.awt.Dimension;
@@ -31,18 +28,33 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+/**
+ * Panel with image background image
+ *
+ */
 class ImagePanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	// The background image
 	private Image img;
 
-	
-	public ImagePanel(String img) {
-		this(new ImageIcon(img).getImage());
-		
+	/**
+	 * Generates panel with background image
+	 * 
+	 * @param filename
+	 *            path of the background image
+	 */
+	public ImagePanel(String filename) {
+		this(new ImageIcon(filename).getImage());
 	}
 
+	/**
+	 * Generates panel with background image
+	 * 
+	 * @param img
+	 *            the background image
+	 */
 	public ImagePanel(Image img) {
 		this.img = img;
 		Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
@@ -53,6 +65,9 @@ class ImagePanel extends JPanel {
 		setLayout(null);
 	}
 
+	/**
+	 * Paint the component
+	 */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.drawImage(img, 0, 0, null);

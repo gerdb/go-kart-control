@@ -1,8 +1,6 @@
 /**
  *  Project     Go-Kart Control
- *  @file		Gui.java
- *  @author		Gerd Bartelt - www.sebulli.com
- *  @brief		Displays the complete window
+ *  @author		Gerd Bartelt - www.sebulli.com	
  *
  *  @copyright	GPL3
  *
@@ -20,8 +18,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-
 package com.sebulli.gokart.gui;
 
 import static com.sebulli.gokart.Translate._;
@@ -49,138 +45,141 @@ import com.sebulli.gokart.Config;
 import com.sebulli.gokart.Logger;
 import com.sebulli.gokart.comm.Communication;
 
-
-public class Gui implements ActionListener{
+/**
+ * 
+ * Displays the main gui of the application
+ *
+ */
+public class Gui implements ActionListener {
 
 	private List<GokartPanel> gokartPanels = new ArrayList<GokartPanel>();
 
+	// Control elements
 	private JButton sendButton;
-	//private JButton resetButton; 
 	private JRadioButton offButton;
 	private JRadioButton redButton;
 	private JRadioButton yellowButton;
 	private JRadioButton blueButton;
 	private JTextField numberControl;
-	
-	public Gui (Communication com) {
-	    JFrame frame = new JFrame("Go-Kart Control V1.0.0");
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    
-		ImagePanel panel = new ImagePanel("pics/background.png");
-	    panel.setLayout(null);
 
-	    
+	/**
+	 * Constructor of the gui
+	 * 
+	 * @param com
+	 *            Reference to the communication object
+	 */
+	public Gui(Communication com) {
+
+		// Generate the main frame
+		JFrame frame = new JFrame("Go-Kart Control V1.0.0");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		// Image panel with go-kart track
+		ImagePanel panel = new ImagePanel("pics/background.png");
+		panel.setLayout(null);
+
+		// Generate the go-kart panels
+		// The amount depends on the settings in the config file
 		int amountGokartPanels = Config.getInstance().getPropertyAsInt("panels.amount");
-		for (int i=1; i <= amountGokartPanels; i++) {
-			GokartPanel gokartPanel = new GokartPanel(Config.getInstance()
-					.getProperty("panels." + i + ".name"));
-			gokartPanel.setLocation(Config.getInstance().getPropertyAsInt("panels." + i + ".x"),
-					Config.getInstance().getPropertyAsInt("panels." + i + ".y"));
+		for (int i = 1; i <= amountGokartPanels; i++) {
+			GokartPanel gokartPanel = new GokartPanel(Config.getInstance().getProperty("panels." + i + ".name"));
+			gokartPanel.setLocation(Config.getInstance().getPropertyAsInt("panels." + i + ".x"), Config.getInstance()
+					.getPropertyAsInt("panels." + i + ".y"));
 			gokartPanels.add(gokartPanel);
 			panel.add(gokartPanel);
 		}
- 
-	    JTextArea logWindow = new JTextArea(5, 20);
-	    //logWindow.setEditable(false);
-	    logWindow.setBackground(new Color(200, 195, 190));
-	    JScrollPane scrollPane = new JScrollPane(logWindow, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-	            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	    Logger.getInstance().setTextArea(logWindow);
 
-	    JPanel controlPanel = new JPanel();
-	    
-	    GroupLayout layout = new GroupLayout(controlPanel);
-	    layout.setAutoCreateGaps(true);
-	    layout.setAutoCreateContainerGaps(true);
-	    
-	    //T: Button text
-	    sendButton = new JButton (_("Send"));
-	    sendButton.setFont(new Font("Sans", Font.PLAIN, 40));
-	    sendButton.addActionListener(this);
-//	    resetButton = new JButton ("Reset");
-//	    resetButton.setFont(new Font("Sans", Font.PLAIN, 12));
-//	    resetButton.addActionListener(this);
-//	    JPanel buttonPanel = new JPanel();
-//	    buttonPanel.add(resetButton);
-//	    buttonPanel.add(Box.createRigidArea(new Dimension(5,5)));
-//	    buttonPanel.add(sendButton);
-	    
-	    numberControl = new JTextField("" , 3);
-	    numberControl.setFont(new Font("Sans", Font.PLAIN, 60));
-	    numberControl.setHorizontalAlignment(JTextField.RIGHT);
-	    
-	    JPanel radioButtonPanel = new JPanel();
-	    offButton = new JRadioButton("-");
-	    redButton = new JRadioButton("red");
-	    yellowButton = new JRadioButton("yellow");
-	    blueButton = new JRadioButton("blue");
-	    offButton.setFont(new Font("Sans", Font.PLAIN, 12));
-	    redButton.setFont(new Font("Sans", Font.PLAIN, 12));
-	    yellowButton.setFont(new Font("Sans", Font.PLAIN, 12));
-	    blueButton.setFont(new Font("Sans", Font.PLAIN, 12));
-	    offButton.setSelected(true);
-	    offButton.setMnemonic(0);
-	    redButton.setMnemonic(1);
-	    yellowButton.setMnemonic(2);
-	    blueButton.setMnemonic(3);
-	    
-	    // Group the radio buttons.
-	    ButtonGroup group = new ButtonGroup();
-	    group.add(offButton);
-	    group.add(redButton);
-	    group.add(yellowButton);
-	    group.add(blueButton);
-	    
-	    radioButtonPanel.add(offButton);
-	    radioButtonPanel.add(redButton);
-	    radioButtonPanel.add(yellowButton);
-	    radioButtonPanel.add(blueButton);
-	    
-	    radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.PAGE_AXIS));
-	    //buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
-	    
-	    layout.setHorizontalGroup(
-	    		   layout.createSequentialGroup()
-	    		      .addComponent(numberControl)
-	    		      .addComponent(radioButtonPanel)
-	    		      .addComponent(sendButton)
-	    		      
-	    		);
-	    
-	    layout.setVerticalGroup(
-	    		   layout.createSequentialGroup()
-	    		      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-	    		           .addComponent(numberControl)
-	    		           .addComponent(radioButtonPanel)
-	    		           .addComponent(sendButton))
-	    		      
-	    		);
-	    
-    
-	    controlPanel.setLayout(layout);
+		// The log window
+		JTextArea logWindow = new JTextArea(5, 20);
+		// logWindow.setEditable(false);
+		logWindow.setBackground(new Color(200, 195, 190));
+		JScrollPane scrollPane = new JScrollPane(logWindow, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		Logger.getInstance().setTextArea(logWindow);
 
-	    frame.getContentPane().add(panel, BorderLayout.PAGE_START);
-	    frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-	    frame.getContentPane().add(controlPanel, BorderLayout.LINE_END);
-	    
-	    frame.setAlwaysOnTop( true );
-	    frame.setResizable(false);
-	    frame.pack();
-	    frame.setVisible(true);
-	    
+		// The control panel with buttons
+		JPanel controlPanel = new JPanel();
+
+		GroupLayout layout = new GroupLayout(controlPanel);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+
+		// T: Button text
+		sendButton = new JButton(_("Send"));
+		sendButton.setFont(new Font("Sans", Font.PLAIN, 40));
+		sendButton.addActionListener(this);
+
+		numberControl = new JTextField("", 3);
+		numberControl.setFont(new Font("Sans", Font.PLAIN, 60));
+		numberControl.setHorizontalAlignment(JTextField.RIGHT);
+
+		JPanel radioButtonPanel = new JPanel();
+		offButton = new JRadioButton("-");
+		// T: Text of radio buttons
+		redButton = new JRadioButton(_("red"));
+		// T: Text of radio buttons
+		yellowButton = new JRadioButton(_("yellow"));
+		// T: Text of radio buttons
+		blueButton = new JRadioButton(_("blue"));
+
+		offButton.setFont(new Font("Sans", Font.PLAIN, 12));
+		redButton.setFont(new Font("Sans", Font.PLAIN, 12));
+		yellowButton.setFont(new Font("Sans", Font.PLAIN, 12));
+		blueButton.setFont(new Font("Sans", Font.PLAIN, 12));
+
+		offButton.setSelected(true);
+		offButton.setMnemonic(0);
+		redButton.setMnemonic(1);
+		yellowButton.setMnemonic(2);
+		blueButton.setMnemonic(3);
+
+		// Group the radio buttons.
+		ButtonGroup group = new ButtonGroup();
+		group.add(offButton);
+		group.add(redButton);
+		group.add(yellowButton);
+		group.add(blueButton);
+
+		radioButtonPanel.add(offButton);
+		radioButtonPanel.add(redButton);
+		radioButtonPanel.add(yellowButton);
+		radioButtonPanel.add(blueButton);
+
+		radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.PAGE_AXIS));
+
+		layout.setHorizontalGroup(layout.createSequentialGroup().addComponent(numberControl)
+				.addComponent(radioButtonPanel).addComponent(sendButton)
+
+		);
+
+		layout.setVerticalGroup(layout.createSequentialGroup().addGroup(
+				layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(numberControl)
+						.addComponent(radioButtonPanel).addComponent(sendButton))
+
+		);
+
+		controlPanel.setLayout(layout);
+
+		frame.getContentPane().add(panel, BorderLayout.PAGE_START);
+		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+		frame.getContentPane().add(controlPanel, BorderLayout.LINE_END);
+
+		frame.setAlwaysOnTop(true);
+		frame.setResizable(false);
+		frame.pack();
+		frame.setVisible(true);
 	}
 
+	/**
+	 * Action handler of the gui
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == sendButton){
-            System.out.println("Clicked sendButton");
-            offButton.setSelected(true);
-            numberControl.setText("");
-        } 
-//		if(e.getSource() == resetButton){
-//            offButton.setSelected(true);
-//            numberControl.setText("");
-//        } 
-		
+
+		// Send button was clicked
+		if (e.getSource() == sendButton) {
+			offButton.setSelected(true);
+			numberControl.setText("");
+		}
 	}
 }

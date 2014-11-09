@@ -1,8 +1,6 @@
 /**
  *  Project     Go-Kart Control
- *  @file		Logger.java
  *  @author		Gerd Bartelt - www.sebulli.com
- *  @brief		Logs messages in the logger window
  *
  *  @copyright	GPL3
  *
@@ -27,14 +25,23 @@ import java.util.Locale;
 
 import javax.swing.JTextArea;
 
+/**
+ * Logs messages in the logger window
+ *
+ */
 public class Logger {
 
 	private static Logger _instance = null;
 	private String text = "";
 	private JTextArea textArea = null;
 
+	// Maximum length of logger text
 	private static final int MAX_TEXT = 10000;
 
+	/**
+	 * Constructor Start with some system information
+	 * 
+	 */
 	private Logger() {
 		log("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " "
 				+ System.getProperty("os.version"));
@@ -44,12 +51,23 @@ public class Logger {
 		log("Language: " + Locale.getDefault());
 	}
 
+	/**
+	 * Generate a singleton
+	 * 
+	 * @return a Reference to the class
+	 */
 	public synchronized static Logger getInstance() {
 		if (_instance == null)
 			_instance = new Logger();
 		return _instance;
 	}
 
+	/**
+	 * Add a new message to the logger window
+	 * 
+	 * @param line
+	 *            The new message
+	 */
 	public void log(String line) {
 		text += line + "\n";
 
@@ -63,11 +81,20 @@ public class Logger {
 		refresh();
 	}
 
+	/**
+	 * Sets a reference to the message window
+	 * 
+	 * @param textArea
+	 *            The control component
+	 */
 	public void setTextArea(JTextArea textArea) {
 		this.textArea = textArea;
 		refresh();
 	}
 
+	/**
+	 * Update the logger window with the new text
+	 */
 	private void refresh() {
 		if (textArea != null) {
 			textArea.setText(text);

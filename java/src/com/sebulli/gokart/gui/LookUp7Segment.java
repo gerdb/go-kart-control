@@ -1,8 +1,6 @@
 /**
  *  Project     Go-Kart Control
- *  @file		LookUp7Segment.java
  *  @author		Gerd Bartelt - www.sebulli.com
- *  @brief		Lookup table for a 7 segment alphanumeric display
  *
  *  @copyright	GPL3
  *
@@ -21,13 +19,15 @@
  *
  */
 
-
 package com.sebulli.gokart.gui;
 
+/**
+ * Lookup table for a 7 segment alphanumeric display
+ *
+ */
 public class LookUp7Segment {
 
-	private final static byte[] table ={
-			0b0111111, // 0
+	private final static byte[] table = { 0b0111111, // 0
 			0b0000110, // 1
 			0b1011011, // 2
 			0b1001111, // 3
@@ -156,7 +156,14 @@ public class LookUp7Segment {
 			0b1000000, // ~
 			0b0000000, // DEL
 	};
-	
+
+	/**
+	 * Convert an ASCII character to a 7-segment code
+	 * 
+	 * @param c
+	 *            The ASCII character
+	 * @return Byte that correspondents to the 7 segment pattern
+	 */
 	static byte get7SegmentCode(char c) {
 		if (c >= table.length)
 			return 0;

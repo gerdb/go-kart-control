@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: emailATsebulli.com\n"
-"POT-Creation-Date: 2014-11-02 09:58+0100\n"
+"POT-Creation-Date: 2014-11-09 10:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,16 +18,81 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #. T: Button text
-#: ../src/com/sebulli/gokart/gui/Gui.java:73
+#: ../src/com/sebulli/gokart/gui/Gui.java:108
 msgid "Send"
 msgstr ""
 
-#. T: Text logger window
-#: ../src/com/sebulli/gokart/comm/Communication.java:31
-msgid "FTDI device: "
+#. T: Text of radio buttons
+#: ../src/com/sebulli/gokart/gui/Gui.java:119
+msgid "red"
+msgstr ""
+
+#. T: Text of radio buttons
+#: ../src/com/sebulli/gokart/gui/Gui.java:121
+msgid "yellow"
+msgstr ""
+
+#. T: Text of radio buttons
+#: ../src/com/sebulli/gokart/gui/Gui.java:123
+msgid "blue"
+msgstr ""
+
+#. T: Status message
+#: ../src/com/sebulli/gokart/comm/Communication.java:63
+msgid "Closing serial port"
+msgstr ""
+
+#. T: Status message
+#: ../src/com/sebulli/gokart/comm/Communication.java:68
+msgid "Serial port already closed"
 msgstr ""
 
 #. T: Error message
-#: ../src/com/sebulli/gokart/comm/Communication.java:49
-msgid "Error: No FTDI device found."
+#: ../src/com/sebulli/gokart/comm/Communication.java:86
+msgid "Error while sending"
+msgstr ""
+
+#. T: Status message
+#: ../src/com/sebulli/gokart/comm/Communication.java:101
+msgid "Serial port already opened"
+msgstr ""
+
+#. T: Status message
+#: ../src/com/sebulli/gokart/comm/Communication.java:108
+msgid "Serial ports found:"
+msgstr ""
+
+#. T: Status message
+#: ../src/com/sebulli/gokart/comm/Communication.java:116
+msgid "Serial port not found:"
+msgstr ""
+
+#. T: Status message
+#: ../src/com/sebulli/gokart/comm/Communication.java:122
+msgid "Opening serial port:"
+msgstr ""
+
+#. T: Status message
+#: ../src/com/sebulli/gokart/comm/Communication.java:125
+msgid "Serial port is blocked"
+msgstr ""
+
+#. T: Status message
+#: ../src/com/sebulli/gokart/comm/Communication.java:131
+msgid "No access to output stream"
+msgstr ""
+
+#. T: Status message
+#: ../src/com/sebulli/gokart/comm/Communication.java:145
+msgid "Could not set port parameters"
+msgstr ""
+
+#. T: Error message
+#: ../src/com/sebulli/gokart/Config.java:50
+msgid "Error opening file settings.txt"
+msgstr ""
+
+#. T: Error message
+#: ../src/com/sebulli/gokart/Config.java:83
+msgid "Key not found:"
 msgstr ""

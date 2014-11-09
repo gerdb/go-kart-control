@@ -1,8 +1,6 @@
 /**
  *  Project     Go-Kart Control
- *  @file		Main.java
  *  @author		Gerd Bartelt - www.sebulli.com
- *  @brief		The projects main class
  *
  *  @copyright	GPL3
  *
@@ -28,17 +26,27 @@ import java.awt.SplashScreen;
 import com.sebulli.gokart.comm.Communication;
 import com.sebulli.gokart.gui.Gui;
 
+/**
+ * The projects main class
+ *
+ */
 public class Main {
 
 	private static Communication com;
 
+	/**
+	 * The main function
+	 * 
+	 * @param args
+	 *            Command line arguments
+	 */
 	public static void main(String[] args) {
-		// Schedule a job for the event-dispatching thread:
-		// creating and showing this application's GUI.
 
+		// Some system information
 		System.out.println("System.java.library.path: " + System.getProperty("java.library.path"));
 		System.out.println("System.java.home: " + System.getProperty("java.home"));
 
+		// Splas screen
 		final SplashScreen splash = SplashScreen.getSplashScreen();
 		if (splash != null) {
 			try {
@@ -48,9 +56,11 @@ public class Main {
 			splash.close();
 		}
 
+		// Load some objects
 		Translate.loadLocaleSettings();
 		com = new Communication();
 
+		// Generate the gui
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new Gui(com);

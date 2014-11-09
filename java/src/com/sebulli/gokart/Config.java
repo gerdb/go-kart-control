@@ -1,9 +1,7 @@
 /**
  *  Project     Go-Kart Control
- *  @file		Config.java
- *  @author		Gerd Bartelt - www.sebulli.com
- *  @brief		Handles configuration settings
- *
+ *  @author Gerd Bartelt - www.sebulli.com
+ *  
  *  @copyright	GPL3
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -26,71 +24,131 @@ package com.sebulli.gokart;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
+import static com.sebulli.gokart.Translate._;
 
+/**
+ * Handles configuration settings
+ * 
+ */
 public class Config {
 
 	private static Config _instance = null;
 
 	private Properties props = null;
 
+	/**
+	 * Constructor
+	 * Loads the file settings.txt
+	 */
 	private Config() {
 		props = new Properties();
 		try {
 			FileInputStream fis = new FileInputStream(new File("settings.txt"));
 			props.load(fis);
 		} catch (Exception e) {
-			// catch Configuration Exception right here
+			// T: Error message
+			Logger.getInstance().log(_("Error opening file settings.txt"));
 		}
 	}
 
+	/**
+	 * Generate a singleton
+	 * 
+	 * @return a Reference to the class
+	 */
 	public synchronized static Config getInstance() {
 		if (_instance == null)
 			_instance = new Config();
 		return _instance;
 	}
 
-	// get property value by name
+	/**
+	 * Get a property as string by key name
+	 * Returns an empty string, if it doesn't exist.
+	 * Also trims the string
+	 * 
+	 * @param key
+	 * 			The property's name (key)
+	 * @return
+	 * 			The value as string
+	 */
 	public String getProperty(String key) {
 		String value = "";
+		
+		// Get the property's value
 		if (props.containsKey(key))
 			value = (String) props.get(key);
 		else {
-			Logger.getInstance().log("Key '" + key + "' not found.");
+			//T: Error message
+			Logger.getInstance().log(_("Key not found:") + " " + key);
 			return "";
 		}
+		
+		// Trim the string
 		return value.trim();
 	}
-	// get property value by name
+
+	/**
+	 * Get a property as string by key name
+	 * Also trims the string.
+	 * Does not generate a error log, if the property doesn't exist.
+	 * 
+	 * @param key
+	 * 			The property's name (key)
+	 * @return
+	 * 			The value as string
+	 */
 	public String getPropertyIfExists(String key) {
 		String value = "";
+		
+		// Get the property's value
 		if (props.containsKey(key))
 			value = (String) props.get(key);
 		else {
 			return "";
 		}
+		
+		// Trim the string
 		return value.trim();
 	}
-	
+
+	/**
+	 * Checks whether a configuration key exists and
+	 * is not empty
+	 * 
+	 * @param key
+	 * 			The key to check
+	 * @return
+	 * 			True, if there is an entry with this key
+	 */
 	public boolean isSet(String key) {
 		if (!props.containsKey(key))
 			return false;
-		
+
+		// Check also empty strings
 		String value = (String) props.get(key);
 		return !value.trim().isEmpty();
-		
+
 	}
 
+	/**
+	 * Get a property as integer by key name
+	 * Returns 0, if it doesn't exist.
+	 * 
+	 * @param key
+	 * @return
+	 */
 	public int getPropertyAsInt(String key) {
 		String property = getProperty(key);
 		if (!property.isEmpty()) {
 			try {
 				return Integer.parseInt(property);
 			} catch (Exception e) {
-				Logger.getInstance().log("Error parsing key '" + key + "' as integer.");
+				//T: Error message
+				Logger.getInstance().log("Error parsing key as integer:" + " " + key);
 				return 0;
 			}
-		}
-		else {
+		} else {
 			return 0;
 		}
 

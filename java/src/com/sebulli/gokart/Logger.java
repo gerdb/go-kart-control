@@ -56,10 +56,13 @@ public class Logger {
 	 * 
 	 * @return a Reference to the class
 	 */
-	public synchronized static Logger getInstance() {
+	public synchronized static Logger getLogger() {
 		if (_instance == null)
 			_instance = new Logger();
 		return _instance;
+	}
+	public synchronized static Logger getLogger(Class<?> clazz) {
+		return getLogger();
 	}
 
 	/**
@@ -69,6 +72,10 @@ public class Logger {
 	 *            The new message
 	 */
 	public void log(String line) {
+		
+		// Output also to the console
+		System.out.println(line);
+		
 		text += line + "\n";
 
 		// limit to MAX_TEXT characters
@@ -80,7 +87,45 @@ public class Logger {
 		}
 		refresh();
 	}
+	public void log(String line, Exception e) {
+		log(line);
+		e.printStackTrace();
+	}
 
+	public void info(String line) {
+		if (isInfoEnabled())
+			log(line);
+	}
+	public void debug(String line) {
+		if (isDebugEnabled())
+			log(line);
+	}
+	public void debug(StringBuilder stringBuilder) {
+		if (isDebugEnabled())
+			log(stringBuilder.toString());
+	}
+	public void warn(String line) {
+		log(line);
+	}
+	public void warn(String line, Exception e) {
+		log(line, e);
+	}
+	public void warn(String line, Throwable th) {
+		log(line);
+	}
+	public void error(String line) {
+		log(line);
+	}
+	public void error(String line, Exception e) {
+		log(line, e);
+	}
+	public boolean isInfoEnabled() {
+		return false;
+	}
+	public boolean isDebugEnabled() {
+		return false;
+	}
+	
 	/**
 	 * Sets a reference to the message window
 	 * 

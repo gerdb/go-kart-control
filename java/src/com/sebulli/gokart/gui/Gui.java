@@ -95,7 +95,7 @@ public class Gui implements ActionListener {
 		logWindow.setBackground(new Color(200, 195, 190));
 		JScrollPane scrollPane = new JScrollPane(logWindow, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		Logger.getInstance().setTextArea(logWindow);
+		Logger.getLogger().setTextArea(logWindow);
 
 		// The control panel with buttons
 		JPanel controlPanel = new JPanel();
@@ -182,4 +182,5 @@ public class Gui implements ActionListener {
 			numberControl.setText("");
 		}
 	}
+
 }

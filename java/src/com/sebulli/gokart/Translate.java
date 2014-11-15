@@ -240,7 +240,7 @@ public class Translate {
 			in.close();
 
 		} catch (IOException e) {
-			Logger.getInstance().log("Error loading message.po.");
+			Logger.getLogger().log("Error loading message.po.");
 		}
 	}
 
@@ -271,7 +271,7 @@ public class Translate {
 			}
 
 		}
-		Logger.getInstance().log("Language file " + f.getName() + " not found.");
+		Logger.getLogger().log("Language file " + f.getName() + " not found.");
 
 	}
 

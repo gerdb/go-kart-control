@@ -47,7 +47,7 @@ public class Config {
 			props.load(fis);
 		} catch (Exception e) {
 			// T: Error message
-			Logger.getInstance().log(_("Error opening file settings.txt"));
+			Logger.getLogger().log(_("Error opening file settings.txt"));
 		}
 	}
 
@@ -80,7 +80,7 @@ public class Config {
 			value = (String) props.get(key);
 		else {
 			//T: Error message
-			Logger.getInstance().log(_("Key not found:") + " " + key);
+			Logger.getLogger().log(_("Key not found:") + " " + key);
 			return "";
 		}
 		
@@ -145,7 +145,7 @@ public class Config {
 				return Integer.parseInt(property);
 			} catch (Exception e) {
 				//T: Error message
-				Logger.getInstance().log("Error parsing key as integer:" + " " + key);
+				Logger.getLogger().log("Error parsing key as integer:" + " " + key);
 				return 0;
 			}
 		} else {

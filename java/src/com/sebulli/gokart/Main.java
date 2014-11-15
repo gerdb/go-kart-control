@@ -59,7 +59,7 @@ public class Main {
 		// Load some objects
 		Translate.loadLocaleSettings();
 		com = new Communication();
-
+		com.open();
 		// Generate the gui
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {

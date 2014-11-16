@@ -135,8 +135,10 @@ public class Config {
 	 * Get a property as integer by key name
 	 * Returns 0, if it doesn't exist.
 	 * 
-	 * @param key
+	 * @param 
+	 * 		key
 	 * @return
+	 * 		The value of the key 
 	 */
 	public int getPropertyAsInt(String key) {
 		String property = getProperty(key);
@@ -146,6 +148,31 @@ public class Config {
 			} catch (Exception e) {
 				//T: Error message
 				Logger.getLogger().log("Error parsing key as integer:" + " " + key);
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+
+	}
+	
+	/**
+	 * Get a property as double by key name
+	 * Returns 0, if it doesn't exist.
+	 * 
+	 * @param 
+	 * 		key
+	 * @return
+	 * 		The value of the key 
+	 */
+	public double getPropertyAsDouble(String key) {
+		String property = getProperty(key);
+		if (!property.isEmpty()) {
+			try {
+				return Double.parseDouble(property);
+			} catch (Exception e) {
+				//T: Error message
+				Logger.getLogger().log("Error parsing key as double:" + " " + key);
 				return 0;
 			}
 		} else {

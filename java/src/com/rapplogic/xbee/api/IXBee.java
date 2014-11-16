@@ -28,7 +28,7 @@ import java.io.IOException;
  *
  */
 public interface IXBee {
-	public void open(String port, int baudRate) throws Exception;
+	public void open(String port, int baudRate) throws XBeeException;
 
 	public void addPacketListener(PacketListener packetListener);
 

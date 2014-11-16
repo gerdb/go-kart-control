@@ -20,6 +20,7 @@
  */
 
 package com.sebulli.gokart.gui;
+import static com.sebulli.gokart.Translate._;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -28,6 +29,8 @@ import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import com.sebulli.gokart.Config;
 
 /**
  * 
@@ -43,7 +46,12 @@ public class GokartPanel extends JPanel {
 	private IconDisplay flag;
 	private IconDisplay batt;
 	private IconDisplay signal;
-
+	private JLabel nameLabel;
+	
+	private double signalPoor = 0;
+	private double signalGood = 0;
+	private double battEmpty = 0;
+	private double battFull = 0;
 	/**
 	 * Constructor Generates a go-kart panel with all control elements
 	 * 
@@ -52,6 +60,14 @@ public class GokartPanel extends JPanel {
 	 */
 	public GokartPanel(String name) {
 
+		// Signal thresholds
+		signalPoor = Config.getInstance().getPropertyAsDouble("signal.poor");
+		signalGood = Config.getInstance().getPropertyAsDouble("signal.good");
+		
+		// Battery thresholds
+		battEmpty = Config.getInstance().getPropertyAsDouble("battery.empty");
+		battFull = Config.getInstance().getPropertyAsDouble("battery.full");
+		
 		// Set panel size
 		Dimension size = new Dimension(100, 62);
 		setPreferredSize(size);
@@ -73,7 +89,7 @@ public class GokartPanel extends JPanel {
 			add(seg7s[i]);
 		}
 
-		JLabel nameLabel = new JLabel(name);
+		nameLabel = new JLabel(name);
 		nameLabel.setFont(new Font("Sans", Font.PLAIN, 10));
 		nameLabel.setSize(nameLabel.getPreferredSize());
 
@@ -90,7 +106,9 @@ public class GokartPanel extends JPanel {
 		add(nameLabel);
 
 		// Set default values
-		setDisplayValue("   ");
+		setDisplayValue(0,0);
+		setDisplayValue(1,0);
+		setDisplayValue(2,0);
 		setFlagValue(0);
 		setBattValue(0);
 		setSignalValue(0);
@@ -101,20 +119,21 @@ public class GokartPanel extends JPanel {
 	 * 
 	 * @param s
 	 */
-	public void setDisplayValue(String s) {
-		String display;
-
-		// Get the last 3 characters with leading spaces
-		display = "   " + s;
-		display = display.substring(display.length() - 3);
-
-		// Set all segments
-		for (int i = 0; i < 3; i++) {
-			if (display.length() > i)
-				seg7s[i].setValue(LookUp7Segment.get7SegmentCode(display.charAt(i)));
-			else
-				seg7s[i].setValue(' ');
-		}
+	public void setDisplayValue(int i, int code) {
+//		String display;
+//
+//		// Get the last 3 characters with leading spaces
+//		display = "   " + s;
+//		display = display.substring(display.length() - 3);
+//
+//		// Set all segments
+//		for (int i = 0; i < 3; i++) {
+//			if (display.length() > i)
+//				seg7s[i].setValue(LookUp7Segment.get7SegmentCode(display.charAt(i)));
+//			else
+//				seg7s[i].setValue(' ');
+//		}
+		seg7s[i].setValue(code);
 	}
 
 	/**
@@ -124,7 +143,15 @@ public class GokartPanel extends JPanel {
 	 *            The value to set (index of the icon set)
 	 */
 	public void setFlagValue(int value) {
-		flag.setValue(value);
+		if (value == 1)
+			flag.setValue(1);
+		else if (value == 2)
+			flag.setValue(2);
+		else if (value == 4)
+			flag.setValue(3);
+		else 
+			flag.setValue(0);
+		
 	}
 
 	/**
@@ -133,8 +160,16 @@ public class GokartPanel extends JPanel {
 	 * @param value
 	 *            The value to set (index of the icon set)
 	 */
-	public void setBattValue(int value) {
-		batt.setValue(value);
+	public void setBattValue(double value) {
+		batt.setToolTipText(String.format("%2.1f", value + 0.01) + "V");
+		if (value < 5.0) {
+			batt.setValue(0);
+		} else if (value <= battEmpty) {
+			batt.setValue(1);	
+		} else {
+			batt.setValue(1 + (int)(10*((double)value - battEmpty) / (battFull - battEmpty)));
+		}
+			
 	}
 
 	/**
@@ -144,7 +179,24 @@ public class GokartPanel extends JPanel {
 	 *            The value to set (index of the icon set)
 	 */
 	public void setSignalValue(int value) {
-		signal.setValue(value);
+		if (value  == 0) {
+			// T: ToolTip text
+			signal.setToolTipText(_("No signal"));
+			signal.setValue(0);
+		} else {
+			signal.setToolTipText(value + "dBm");
+			signal.setValue(1 + (int)(6*((double)value - signalPoor) / (signalGood - signalPoor)));
+		}
+	}
+	
+	/**
+	 * Setter for serial number
+	 * 
+	 * @param value
+	 *            The value to set (index of the icon set)
+	 */
+	public void setSerialNumber(String snr) {
+		nameLabel.setToolTipText(snr);
 	}
 
 }

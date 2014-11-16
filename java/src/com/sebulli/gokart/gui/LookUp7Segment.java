@@ -164,7 +164,7 @@ public class LookUp7Segment {
 	 *            The ASCII character
 	 * @return Byte that correspondents to the 7 segment pattern
 	 */
-	static byte get7SegmentCode(char c) {
+	public static byte get7SegmentCode(char c) {
 		if (c >= table.length)
 			return 0;
 		if (c < 0)

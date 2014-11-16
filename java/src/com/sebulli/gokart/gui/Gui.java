@@ -40,10 +40,13 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 
 import com.sebulli.gokart.Config;
 import com.sebulli.gokart.Logger;
 import com.sebulli.gokart.comm.Communication;
+import com.sebulli.gokart.comm.ReceiveData;
+import com.sebulli.gokart.comm.TransmitData;
 
 /**
  * 
@@ -61,6 +64,9 @@ public class Gui implements ActionListener {
 	private JRadioButton yellowButton;
 	private JRadioButton blueButton;
 	private JTextField numberControl;
+	private Communication com = null;
+	private Timer timer;
+	private TransmitData txdata;
 
 	/**
 	 * Constructor of the gui
@@ -69,6 +75,9 @@ public class Gui implements ActionListener {
 	 *            Reference to the communication object
 	 */
 	public Gui(Communication com) {
+
+		// Set a reference to the communication object
+		this.com = com;
 
 		// Generate the main frame
 		JFrame frame = new JFrame("Go-Kart Control V1.0.0");
@@ -81,11 +90,16 @@ public class Gui implements ActionListener {
 		// Generate the go-kart panels
 		// The amount depends on the settings in the config file
 		int amountGokartPanels = Config.getInstance().getPropertyAsInt("panels.amount");
+
+		txdata = new TransmitData(amountGokartPanels);
+		
 		for (int i = 1; i <= amountGokartPanels; i++) {
 			GokartPanel gokartPanel = new GokartPanel(Config.getInstance().getProperty("panels." + i + ".name"));
 			gokartPanel.setLocation(Config.getInstance().getPropertyAsInt("panels." + i + ".x"), Config.getInstance()
 					.getPropertyAsInt("panels." + i + ".y"));
+			gokartPanel.setSerialNumber(Config.getInstance().getProperty("panels." + i + ".serial"));
 			gokartPanels.add(gokartPanel);
+			txdata.setPowerValue(i, Config.getInstance().getPropertyAsInt("panels." + i + ".power"));
 			panel.add(gokartPanel);
 		}
 
@@ -116,34 +130,34 @@ public class Gui implements ActionListener {
 		JPanel radioButtonPanel = new JPanel();
 		offButton = new JRadioButton("-");
 		// T: Text of radio buttons
-		redButton = new JRadioButton(_("red"));
-		// T: Text of radio buttons
 		yellowButton = new JRadioButton(_("yellow"));
 		// T: Text of radio buttons
 		blueButton = new JRadioButton(_("blue"));
+		// T: Text of radio buttons
+		redButton = new JRadioButton(_("red"));
 
 		offButton.setFont(new Font("Sans", Font.PLAIN, 12));
-		redButton.setFont(new Font("Sans", Font.PLAIN, 12));
 		yellowButton.setFont(new Font("Sans", Font.PLAIN, 12));
 		blueButton.setFont(new Font("Sans", Font.PLAIN, 12));
+		redButton.setFont(new Font("Sans", Font.PLAIN, 12));
 
 		offButton.setSelected(true);
 		offButton.setMnemonic(0);
-		redButton.setMnemonic(1);
-		yellowButton.setMnemonic(2);
-		blueButton.setMnemonic(3);
+		yellowButton.setMnemonic(1);
+		blueButton.setMnemonic(2);
+		redButton.setMnemonic(3);
 
 		// Group the radio buttons.
 		ButtonGroup group = new ButtonGroup();
 		group.add(offButton);
-		group.add(redButton);
 		group.add(yellowButton);
 		group.add(blueButton);
+		group.add(redButton);
 
 		radioButtonPanel.add(offButton);
-		radioButtonPanel.add(redButton);
 		radioButtonPanel.add(yellowButton);
 		radioButtonPanel.add(blueButton);
+		radioButtonPanel.add(redButton);
 
 		radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.PAGE_AXIS));
 
@@ -164,10 +178,17 @@ public class Gui implements ActionListener {
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		frame.getContentPane().add(controlPanel, BorderLayout.LINE_END);
 
-		frame.setAlwaysOnTop(true);
+		// Set main window on top 
+		frame.setAlwaysOnTop(Config.getInstance().getPropertyAsInt("window.ontop") == 1);
+
+		
 		frame.setResizable(false);
 		frame.pack();
 		frame.setVisible(true);
+		
+		timer = new Timer(100, this);
+		timer.setInitialDelay(100);
+		timer.start(); 
 	}
 
 	/**
@@ -175,11 +196,39 @@ public class Gui implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
+		// 100ms Timer
+		if (e.getSource() == timer) {
+			ReceiveData rxdata = com.exchangeData(txdata);
+			for (int i=0; i< gokartPanels.size(); i++) {
+				gokartPanels.get(i).setSignalValue(rxdata.getRSSIValue(i+1));
+				gokartPanels.get(i).setBattValue(rxdata.getBattValue(i+1));
+				gokartPanels.get(i).setFlagValue(rxdata.getPortByte(i+1, 3));
+				for (int ii =0; ii<3; ii++)
+					gokartPanels.get(i).setDisplayValue(ii,rxdata.getPortByte(i+1, ii));
+			}
+		}
 
+		
 		// Send button was clicked
 		if (e.getSource() == sendButton) {
+			
+			// take the values to send them
+			txdata.setDisplayValue(numberControl.getText());
+			
+			if (yellowButton.isSelected())
+				txdata.setFlagValue(1);
+			else if (blueButton.isSelected())
+				txdata.setFlagValue(2);
+			else if (redButton.isSelected())
+				txdata.setFlagValue(4);
+			else 
+				txdata.setFlagValue(0);
+			
 			offButton.setSelected(true);
 			numberControl.setText("");
+			
+			com.setNewValues();
 		}
 	}
 

@@ -133,7 +133,7 @@ public class XBee implements IXBee {
 	 * is set correctly and attempt to update if AP=1.  If AP=0 (Transparent mode), an
 	 * exception will be thrown.
 	 */
-	public void open(String port, int baudRate) throws Exception {
+	public void open(String port, int baudRate) throws XBeeException {
 		try {
 			if (this.isConnected()) {
 				throw new IllegalStateException("Cannot open new connection -- existing connection is still open.  Please close first");
@@ -141,15 +141,13 @@ public class XBee implements IXBee {
 			
 			RxTxSerialComm serial = new RxTxSerialComm(); 
 			serial.openSerialPort(port, baudRate);
-			
-			log.log("Connected to XBee module on port: " + port);
-
+			log.log("Connected to XBee module on port:" + " " + port);
 			
 			this.initConnection(serial);
 		} catch (XBeeException e) {
 			throw e;
 		} catch (Exception e) {		
-			throw e;//new XBeeException(e);
+			throw new XBeeException(e);
 		}
 	}
 	

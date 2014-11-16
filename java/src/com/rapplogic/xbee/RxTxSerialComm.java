@@ -19,6 +19,8 @@
 
 package com.rapplogic.xbee;
 
+import static com.sebulli.gokart.Translate._;
+
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,6 +92,13 @@ public class RxTxSerialComm implements XBeeConnection, SerialPortEventListener {
 		}
 
 		if (!found) {
+			Enumeration<?> enumComm = CommPortIdentifier.getPortIdentifiers();
+			while (enumComm.hasMoreElements()) {
+				CommPortIdentifier  serialPortId = (CommPortIdentifier) enumComm.nextElement();
+				// T: Status message
+				Logger.getLogger().log(_("Serial ports found:") + " " + serialPortId.getName());
+			}
+
 			throw new XBeeException("Could not find port: " + port);
 		}
 		

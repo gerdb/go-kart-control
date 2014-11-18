@@ -27,7 +27,10 @@ signal.poor : -100
 signal.good : -85
 
 # Time in seconds between 2 cycles of communicate with all panels
-communication.pause : 10.0
+communication.pause : 10
+
+# How many times should a transmission be repeated
+communication.repeat : 3
 
 # Amount of panels
 panels.amount : 5
@@ -40,31 +43,31 @@ panels.amount : 5
 # .power  0 .. 4  (0=1mW, 1=23mW, 2=100mW, 3=158mW, 4=316mW)
 
 panels.1.name   : 101
-panels.1.serial : 0013A20040A28F4B
+panels.1.serial : 0013A200 40A28F4B
 panels.1.x      : 30
 panels.1.y      : 420
-panels.1.power  : 1
+panels.1.power  : 0
 
 panels.2.name   : 102
-panels.2.serial : 0013A200FFFFFFFF
+panels.2.serial : 0013A200 FFFFFFFF
 panels.2.x      : 690
 panels.2.y      : 380
-panels.2.power  : 2
+panels.2.power  : 0
 
 panels.3.name   : 103
-panels.3.serial : 0013A200FFFFFFFF
+panels.3.serial : 0013A200 FFFFFFFF
 panels.3.x      : 450
 panels.3.y      : 300
 panels.3.power  : 0
 
 panels.4.name   : 104
-panels.4.serial : 0013A200FFFFFFFF
+panels.4.serial : 0013A200 FFFFFFFF
 panels.4.x      : 230
 panels.4.y      : 5
 panels.4.power  : 0
 
 panels.5.name   : 105
-panels.5.serial : 0013A200FFFFFFFF
+panels.5.serial : 0013A200 FFFFFFFF
 panels.5.x      : 140
 panels.5.y      : 320
 panels.5.power  : 0

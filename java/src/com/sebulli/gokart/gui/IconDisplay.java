@@ -78,13 +78,15 @@ class IconDisplay extends JPanel {
 	 *            Index of the selected icon
 	 */
 	public void setValue(int value) {
-		this.value = value;
-		if (this.value < 0)
-			this.value = 0;
-		if (this.value >= cntX * cntY)
-			this.value = cntX * cntY - 1;
+		if (this.value != value) {
+			this.value = value;
+			if (this.value < 0)
+				this.value = 0;
+			if (this.value >= cntX * cntY)
+				this.value = cntX * cntY - 1;
 
-		this.repaint();
+			this.repaint();
+		}
 	}
 
 	/**

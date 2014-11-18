@@ -34,7 +34,8 @@ public class Logger {
 	private static Logger _instance = null;
 	private String text = "";
 	private JTextArea textArea = null;
-
+	private boolean newLine = true;
+	
 	// Maximum length of logger text
 	private static final int MAX_TEXT = 10000;
 
@@ -71,12 +72,22 @@ public class Logger {
 	 * @param line
 	 *            The new message
 	 */
-	public void log(String line) {
+	public void logText(String line, char startend) {
+		
+		if (((startend == ' ') || (startend == 's')) && (!newLine)) {
+			line = "\n" + line;
+		}
+		if ((startend == ' ') || (startend == 'e')) {
+			line = line + "\n";
+			newLine = true;
+		} else {
+			newLine = false;
+		}
 		
 		// Output also to the console
-		System.out.println(line);
+		System.out.print(line);
 		
-		text += line + "\n";
+		text += line;
 
 		// limit to MAX_TEXT characters
 		if (text.length() > MAX_TEXT) {
@@ -87,6 +98,23 @@ public class Logger {
 		}
 		refresh();
 	}
+	
+	public void logStart(String line) {
+		logText(line, 's');
+	}
+
+	public void logEnd(String line) {
+		logText(line, 'e');
+	}
+	
+	public void logMiddle(String line) {
+		logText(line, 'm');
+	}
+	
+	public void log(String line) {
+		logText(line, ' ');
+	}
+	
 	public void log(String line, Exception e) {
 		log(line);
 		e.printStackTrace();

@@ -4,7 +4,7 @@ public class XBeeConfiguration {
 
 	private boolean startupChecks = true;
 	private int maxQueueSize = 100;
-	private int sendSynchronousTimeout = 5000;
+	private int sendSynchronousTimeout = 2000;
 	private ResponseQueueFilter responseQueueFilter;
 	
 	private final ResponseQueueFilter noRequestResponseQueueFilter = new ResponseQueueFilter() {

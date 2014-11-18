@@ -26,5 +26,5 @@ package com.sebulli.gokart.comm;
  * 
  */
 public enum CommState {
-	Initialize, SetPower, TransmitData, ReceiveData, GetRSSI, Wait
+	Initialize, SetPower, TransmitData, WaitRX, GetRSSI, Wait
 }

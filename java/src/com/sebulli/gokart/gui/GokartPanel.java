@@ -120,19 +120,6 @@ public class GokartPanel extends JPanel {
 	 * @param s
 	 */
 	public void setDisplayValue(int i, int code) {
-//		String display;
-//
-//		// Get the last 3 characters with leading spaces
-//		display = "   " + s;
-//		display = display.substring(display.length() - 3);
-//
-//		// Set all segments
-//		for (int i = 0; i < 3; i++) {
-//			if (display.length() > i)
-//				seg7s[i].setValue(LookUp7Segment.get7SegmentCode(display.charAt(i)));
-//			else
-//				seg7s[i].setValue(' ');
-//		}
 		seg7s[i].setValue(code);
 	}
 

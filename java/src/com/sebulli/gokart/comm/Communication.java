@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rapplogic.xbee.api.ApiId;
+import com.rapplogic.xbee.api.AtCommand;
+import com.rapplogic.xbee.api.AtCommandResponse;
 import com.rapplogic.xbee.api.ErrorResponse;
 import com.rapplogic.xbee.api.PacketListener;
 import com.rapplogic.xbee.api.XBee;
@@ -52,49 +54,20 @@ public class Communication {
 	private String portName = "";
 	private int panels_amount = 1;
 	private int panel_index = 1;
+	private int rssi_panel_index = 0;
 	private int communication_pause = 0;
 	private int wait_counter = 0;
 	private boolean newValues = false;
 	private CommState commState;
 	private ReceiveData rxdata;
 	private List<XBeeAddress64> destAdresses;
-
+	private List<String> panelNames;
+	private boolean received = false;
+	private int waitRxCnt = 0;
+	private int repeat = 1;
+	private int repeatCnt = 0;
 	static XBee xbee = new XBee();
 
-	// final ScheduledExecutorService service;
-
-	/**
-	 * Send a text to the serial port
-	 * 
-	 * @param message
-	 *            Text to send
-	 */
-	void sendSerialPort(String message) {
-		System.out.println("Sending: " + message);
-
-		// Note: we are using the Java int data type, since the byte data type
-		// is not unsigned, but the payload is limited to bytes. That is, values
-		// must be between 0-255.
-		int[] payload = new int[] { 90, 180 };
-
-		// specify the remote XBee 16-bit MY address
-		XBeeAddress64 destination = new XBeeAddress64("");
-
-		TxRequest64 tx = new TxRequest64(destination, payload);
-
-		TxStatusResponse status;
-		try {
-			status = (TxStatusResponse) xbee.sendSynchronous(tx);
-			if (status.isSuccess()) {
-				Logger.getLogger().log("ok");
-			}
-		} catch (XBeeTimeoutException e) {
-			e.printStackTrace();
-		} catch (XBeeException e) {
-			e.printStackTrace();
-		}
-
-	}
 
 	/**
 	 * Communication module Start the cyclic task
@@ -112,12 +85,18 @@ public class Communication {
 
 		destAdresses = new ArrayList<XBeeAddress64>();
 		destAdresses.add(new XBeeAddress64());
+		panelNames = new ArrayList<String>();
+		panelNames.add("");
 		for (int i = 1; i <= amountGokartPanels; i++) {
 			destAdresses.add(new XBeeAddress64(FormatAddress(Config.getInstance().getProperty("panels." + i + ".serial"))));
+			panelNames.add(Config.getInstance().getProperty("panels." + i + ".name"));
 		}
-
+		
 		// Read the parameter communication.pause and scale it to 100ms units
 		communication_pause = (int) (Config.getInstance().getPropertyAsDouble("communication.pause") * 10.0);
+		
+		// Repeat n times
+		repeat = Config.getInstance().getPropertyAsInt("communication.repeat");
 
 		// Read the parameter communication.pause and scale it to 100ms units
 		panels_amount = Config.getInstance().getPropertyAsInt("panels.amount");
@@ -132,6 +111,7 @@ public class Communication {
 
 		String ret = "";
 
+		s = s.replace(" ", "");
 		s = s.trim();
 		if (s.length() != 16) {
 			// T: Error log
@@ -166,20 +146,40 @@ public class Communication {
 
 		// Set the power of this module
 		case SetPower:
-			System.out.println(panel_index);
-			System.out.println("Set Power:" + txdata.getPowerValue(panel_index));
+			try {
+				xbee.sendSynchronous(new AtCommand("PL", txdata.getPowerValue(panel_index)));
+			} catch (XBeeTimeoutException e) {
+				Logger.getLogger().error(e.getMessage());
+			} catch (XBeeException e) {
+				Logger.getLogger().error(e.getMessage());
+			}
+
+			repeatCnt = 0;
 			commState = CommState.TransmitData;
 			break;
 
 		// Exchange the data
 		case TransmitData:
-			System.out.println("TransmitData" + txdata.getDisplayValue() + ";" + txdata.getFlagValue());
-			int[] payload = new int[5];
-			payload[0] = txdata.getDisplayValue()[0];
-			payload[1] = txdata.getDisplayValue()[1];
-			payload[2] = txdata.getDisplayValue()[2];
-			payload[3] = txdata.getFlagValue();
-			payload[4] = 138;
+			if (repeatCnt == 0)
+				Logger.getLogger().logStart(panelNames.get(panel_index) + " ");
+			Logger.getLogger().logMiddle(".");
+			
+			repeatCnt ++;
+			
+			rssi_panel_index = 0;
+			received = false;
+			
+			int[] payload = new int[10];
+			payload[0] = 0x55;
+			payload[1] = 0xAA;
+			payload[2] = txdata.getDisplayValue()[0];
+			payload[3] = txdata.getDisplayValue()[1];
+			payload[4] = txdata.getDisplayValue()[2];
+			payload[5] = txdata.getFlagValue();
+			payload[6] = txdata.getPowerValue(panel_index);
+			payload[7] = 120; // reserved
+			payload[8] = 0; // reserved
+			payload[9] = 0; // reserved
 
 			// Get the remote XBee 64-bit address
 			XBeeAddress64 destination = destAdresses.get(panel_index);
@@ -190,44 +190,72 @@ public class Communication {
 			try {
 				status = (TxStatusResponse) xbee.sendSynchronous(tx);
 				if (status.isSuccess()) {
-					// T: Log message
-					Logger.getLogger().log(_("Data sent to XBee module:") + destination);
+					// Log message
+					Logger.getLogger().debug("Data sent to XBee module:" + destination);
 				} else {
-					Logger.getLogger().log(_("Error sending to XBee module:") + destination);
+					Logger.getLogger().debug("Error sending to XBee module:" + destination);
 				}
 			} catch (XBeeTimeoutException e) {
-				e.printStackTrace();
+				Logger.getLogger().error(e.getMessage());
 			} catch (XBeeException e) {
-				e.printStackTrace();
+				Logger.getLogger().error(e.getMessage());
 			}
-			commState = CommState.GetRSSI;
+			waitRxCnt = 0;
+			commState = CommState.WaitRX;
 			break;
-
-		// Exchange the data
-		case ReceiveData:
-
+	
+		// Get the signal strength indicator
+		case WaitRX:
+			waitRxCnt ++;
+			if (waitRxCnt >= 1)
+				commState = CommState.GetRSSI;
 			break;
-
+			
 		// Get the signal strength indicator
 		case GetRSSI:
-			System.out.println("GetRSSI");
 
-			rxdata.setRSSIValue(panel_index, -90);
-
-			// Next panel
-			panel_index++;
-			if (panel_index > panels_amount) {
-				panel_index = 1;
-				wait_counter = 0;
-				commState = CommState.Wait;
+				
+			// Try it again
+			if ((repeatCnt < repeat) && !received) {
+				commState = CommState.TransmitData;
 			} else {
-				commState = CommState.SetPower;
+				
+				
+				if (received) {
+					
+					// We received something, so get the RSSI value
+					try {
+						//xbee.sendSynchronous(new AtCommand("RC", 0));
+						xbee.sendSynchronous(new AtCommand("DB"));
+					} catch (XBeeTimeoutException e) {
+						Logger.getLogger().error(e.getMessage());
+					} catch (XBeeException e) {
+						Logger.getLogger().error(e.getMessage());
+					}
+					Logger.getLogger().logEnd("✓");
+				} else {
+					// No signal
+					rxdata.setRSSIValue(rssi_panel_index, 0);
+					Logger.getLogger().logEnd("?");
+				}
+				
+				// Next panel
+				panel_index++;
+				if (panel_index > panels_amount) {
+					panel_index = 1;
+					wait_counter = 0;
+					commState = CommState.Wait;
+				} else {
+					commState = CommState.SetPower;
+				}
 			}
+			
 
 			break;
 
 		// Make a break between 2 communication cycles and wait
 		case Wait:
+			
 			wait_counter++;
 
 			if (wait_counter > communication_pause || newValues) {
@@ -262,20 +290,36 @@ public class Communication {
 			XBeeAddress64 rxRemAddr64 = znetRxResponse.getRemoteAddress64();
 			for (int i= 1; i<= panels_amount ; i++) {
 				if (destAdresses.get(i).equals(rxRemAddr64)) {
-					Logger.getLogger().log("Received data from:" + rxRemAddr64);
 
 					int rxDataBytes[] = znetRxResponse.getData();
-					Logger.getLogger().log("Received: " + rxDataBytes.toString());
-					
-					// Get 4 bytes that represent the 4 IO ports
-					for (int ii = 0; ii<4; ii++)
-						rxdata.setPortByte(i, ii, rxDataBytes[ii]);
 
-					// Get the battery voltage
-					rxdata.setBattValue(i, ((float)rxDataBytes[4]) / 10);
+					if (znetRxResponse.getData().length == 10) {
+
+						if ((rxDataBytes[0] == 0x55) && (rxDataBytes[1] == 0xAA)) {
+							rssi_panel_index = i;
+							received = true;
+
+							// Get 4 bytes that represent the 4 IO ports
+							for (int ii = 0; ii<4; ii++)
+								rxdata.setPortByte(i, ii, rxDataBytes[2 + ii]);
+
+							// Get the battery voltage
+							rxdata.setBattValue(i, ((float)rxDataBytes[7]) / 10);
+							
+						}
+						
+					}
 				}
 			}
 
+		} else if (response.getApiId() == ApiId.AT_RESPONSE) {
+			AtCommandResponse  atCommandResponse = (AtCommandResponse)response;
+			if (atCommandResponse.getCommand().equals("RC")) {
+				rxdata.setRSSIValue(rssi_panel_index, - atCommandResponse.getValue()[0]);
+			}
+			if (atCommandResponse.getCommand().equals("DB")) {
+				rxdata.setRSSIValue(rssi_panel_index, - atCommandResponse.getValue()[0]);
+			}
 		} else if (response.getApiId() == ApiId.TX_STATUS_RESPONSE) {
 		} else {
 			Logger.getLogger().log("Ignoring mystery packet " + response.toString());

@@ -23,7 +23,6 @@ import com.rapplogic.xbee.api.AtCommandResponse;
 import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.util.IntArrayInputStream;
-import com.sebulli.gokart.Logger;
 
 // tested ok via xmpp on 4/13/09
 
@@ -32,7 +31,6 @@ import com.sebulli.gokart.Logger;
  */
 public class NodeDiscover {
 
-	private final static Logger log = Logger.getLogger(NodeDiscover.class);
 	
 	private XBeeAddress16 nodeAddress16;
 	private XBeeAddress64 nodeAddress64;

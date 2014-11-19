@@ -31,6 +31,7 @@ import java.util.List;
  * @author andrew
  *
  */
+@SuppressWarnings("unchecked")
 public class XBeePin {
 
 //TODO add pin direction
@@ -225,6 +226,7 @@ public class XBeePin {
 	 * @author andrew
 	 *
 	 */
+	@SuppressWarnings("rawtypes")
 	private static class PinSorter implements Comparator {
 		public int compare(Object o1, Object o2) {
 			return ((XBeePin)o1).getPin().compareTo(((XBeePin)o2).getPin());

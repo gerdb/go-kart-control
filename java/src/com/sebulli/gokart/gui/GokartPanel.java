@@ -79,7 +79,7 @@ public class GokartPanel extends JPanel {
 		setLayout(null);
 
 		// Generate the control elements
-		flag = new IconDisplay("flags.png", 4, 1);
+		flag = new IconDisplay("flags.png", 4, 3);
 		batt = new IconDisplay("battery.png", 11, 1);
 		signal = new IconDisplay("signal.png", 7, 1);
 		seg7s = new IconDisplay[3];

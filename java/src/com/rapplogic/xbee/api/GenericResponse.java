@@ -27,6 +27,10 @@ package com.rapplogic.xbee.api;
  */
 public class GenericResponse extends XBeeResponse {
 		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4616962758381335429L;
 	private int genericApiId;
 
 	public GenericResponse() {

@@ -45,6 +45,10 @@ public class ZNetTxRequest extends XBeeRequest {
 	// even with all bytes as escape bytes (a total post-escape packet size of 169!).
 	
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5391715539731414314L;
+	/**
 	 * This is the maximum payload size for ZNet firmware, as specified in the datasheet.
 	 * This value is provided for reference only and is not enforced by this software unless
 	 * max size unless specified in the setMaxPayloadSize(int) method.

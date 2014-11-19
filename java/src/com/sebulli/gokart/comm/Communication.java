@@ -349,5 +349,12 @@ public class Communication {
 		}
 
 	}
+	
+	/**
+	 * Close the communication
+	 */
+	public void close() {
+		xbee.close();
+	}
 
 }

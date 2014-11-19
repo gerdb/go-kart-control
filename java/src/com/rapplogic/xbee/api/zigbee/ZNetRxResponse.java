@@ -33,6 +33,10 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class ZNetRxResponse extends ZNetRxBaseResponse implements NoRequestResponse {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6657732035399722201L;
 	private int[] data;
 	
 	public ZNetRxResponse() {

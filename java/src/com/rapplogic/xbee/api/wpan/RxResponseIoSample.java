@@ -39,6 +39,11 @@ import com.sebulli.gokart.Logger;
  */
 public class RxResponseIoSample extends RxBaseResponse implements NoRequestResponse {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -330484864377280019L;
+
 	private final static Logger log = Logger.getLogger(RxResponseIoSample.class);
 	
 	public final static int ADC_CHANNEL1 = 0x7e; //01111110

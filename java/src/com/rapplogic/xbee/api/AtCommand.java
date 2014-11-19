@@ -43,6 +43,11 @@ import com.rapplogic.xbee.util.IntArrayOutputStream;
  */
 public class AtCommand extends XBeeRequest {
 	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3820024650079482977L;
 	private String command;
 	private int[] value;
 	

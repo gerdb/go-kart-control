@@ -34,6 +34,11 @@ import com.rapplogic.xbee.api.XBeeAddress16;
  */
 public class RxResponse16 extends RxResponse implements NoRequestResponse {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8697512452148199950L;
+
 	public XBeeAddress16 getRemoteAddress() {
 		return (XBeeAddress16) this.getSourceAddress();
 	}

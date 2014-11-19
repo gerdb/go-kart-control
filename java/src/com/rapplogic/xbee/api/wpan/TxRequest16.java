@@ -34,6 +34,10 @@ import com.rapplogic.xbee.util.IntArrayOutputStream;
  */
 public class TxRequest16 extends TxRequestBase {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9195390160474504099L;
 	private XBeeAddress16 remoteAddr16;
 	
 	/**

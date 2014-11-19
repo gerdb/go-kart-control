@@ -34,6 +34,11 @@ import com.rapplogic.xbee.api.XBeeAddress64;
  */
 public class RxResponse64 extends RxResponse {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1532970995328864180L;
+
 	public XBeeAddress64 getRemoteAddress() {
 		return (XBeeAddress64) this.getSourceAddress();
 	}

@@ -33,6 +33,11 @@ import java.util.Map;
  */
 public class ModemStatusResponse extends XBeeResponse implements NoRequestResponse {
 		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 891803196729061184L;
+
 	public enum Status {
 		HARDWARE_RESET (0),
 		WATCHDOG_TIMER_RESET (1),

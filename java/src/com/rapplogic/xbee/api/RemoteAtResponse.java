@@ -30,6 +30,10 @@ package com.rapplogic.xbee.api;
  */
 public class RemoteAtResponse extends AtCommandResponse {
 		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -525633989136770925L;
 	private XBeeAddress64 remoteAddress64;
 	private XBeeAddress16 remoteAddress16;
 	

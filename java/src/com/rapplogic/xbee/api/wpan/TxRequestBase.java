@@ -35,6 +35,11 @@ import com.rapplogic.xbee.util.ByteUtils;
 public abstract class TxRequestBase extends XBeeRequest {
 	
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7813304462907316907L;
+
+	/**
 	 * Maximum payload size as specified in the series 1 XBee manual.
 	 * This is provided for reference only and is not used for validation
 	 */

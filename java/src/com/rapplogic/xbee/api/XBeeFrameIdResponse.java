@@ -29,6 +29,10 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public abstract class XBeeFrameIdResponse extends XBeeResponse {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1719082648663672811L;
 	private int frameId;
 
 	public int getFrameId() {

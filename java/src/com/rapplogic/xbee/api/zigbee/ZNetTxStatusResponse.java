@@ -37,6 +37,11 @@ import com.rapplogic.xbee.api.XBeeFrameIdResponse;
  */
 public class ZNetTxStatusResponse extends XBeeFrameIdResponse {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7237762656793071477L;
+
 	public enum DeliveryStatus {
 		SUCCESS (0),
 		CCA_FAILURE (0x02),

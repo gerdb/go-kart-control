@@ -32,6 +32,10 @@ import com.rapplogic.xbee.util.DoubleByte;
  */
 public class ZNetExplicitRxResponse extends ZNetRxResponse {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7369267497562810281L;
 	private int sourceEndpoint;
 	private int destinationEndpoint;
 	private DoubleByte clusterId;

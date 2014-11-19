@@ -40,6 +40,11 @@ import com.sebulli.gokart.Logger;
  */
 public class ZNetRxIoSampleResponse extends ZNetRxBaseResponse implements NoRequestResponse {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3721505741596174156L;
+
 	private final static Logger log = Logger.getLogger(ZNetRxIoSampleResponse.class);
 	
 	private int digitalChannelMaskMsb;

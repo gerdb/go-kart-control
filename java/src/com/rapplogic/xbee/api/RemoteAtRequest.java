@@ -36,6 +36,10 @@ import com.rapplogic.xbee.util.IntArrayOutputStream;
  */
 public class RemoteAtRequest extends AtCommand {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7571763210614019907L;
 	private XBeeAddress64 remoteAddr64;
 	private XBeeAddress16 remoteAddr16;
 	private boolean applyChanges;

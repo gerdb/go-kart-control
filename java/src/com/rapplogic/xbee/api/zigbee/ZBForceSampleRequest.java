@@ -33,6 +33,11 @@ import com.rapplogic.xbee.api.RemoteAtRequest;
 public class ZBForceSampleRequest extends RemoteAtRequest {
 		
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5556592595956235088L;
+
+	/**
 	 * Creates a Force Sample Remote AT request
 	 * 
 	 * @param dest64

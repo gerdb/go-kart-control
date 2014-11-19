@@ -35,6 +35,11 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public class AtCommandResponse extends XBeeFrameIdResponse {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6143939451753545947L;
+
 	public enum Status {
 		OK (0),
 		ERROR (1),

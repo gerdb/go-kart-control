@@ -40,6 +40,11 @@ import com.rapplogic.xbee.api.XBeeResponse;
  */
 public class ZNetRxBaseResponse extends XBeeResponse {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2777503020292725555L;
+
 	public enum Option {
 		PACKET_ACKNOWLEDGED (0x01),
 		BROADCAST_PACKET (0x02);

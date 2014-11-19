@@ -29,6 +29,10 @@ package com.rapplogic.xbee.api;
  */
 public class ErrorResponse extends XBeeResponse {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6639448140155449238L;
 	private String errorMsg;
 	private Exception exception;
 	

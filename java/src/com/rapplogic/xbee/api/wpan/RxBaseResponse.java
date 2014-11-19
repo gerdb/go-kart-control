@@ -31,6 +31,11 @@ import com.rapplogic.xbee.util.ByteUtils;
  */
 public abstract class RxBaseResponse extends XBeeResponse {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1148035846163804792L;
+
 	private XBeeAddress sourceAddress;
 	
 	private int rssi;

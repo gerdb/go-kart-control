@@ -28,7 +28,6 @@ import com.rapplogic.xbee.api.XBeeAddress16;
 import com.rapplogic.xbee.api.XBeeAddress64;
 import com.rapplogic.xbee.util.ByteUtils;
 import com.rapplogic.xbee.util.IntArrayInputStream;
-import com.sebulli.gokart.Logger;
 
 /**
  * Series 2 XBee.  Parses a Node Discover (ND) AT Command Response
@@ -38,8 +37,6 @@ import com.sebulli.gokart.Logger;
  */
 public class NodeDiscover {
 
-	private final static Logger log = Logger.getLogger(NodeDiscover.class);
-	
 	public enum DeviceType {
 		DEV_TYPE_COORDINATOR (0),
 		DEV_TYPE_ROUTER (1),

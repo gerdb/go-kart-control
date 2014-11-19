@@ -43,6 +43,11 @@ import com.rapplogic.xbee.util.IntArrayOutputStream;
  */
 public class ZNetExplicitTxRequest extends ZNetTxRequest {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1208466120818907727L;
+
 	public enum Endpoint {
 		ZDO_ENDPOINT(0),
 		COMMAND (0xe6), 

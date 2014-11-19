@@ -28,6 +28,12 @@ package com.rapplogic.xbee.api;
  *
  */
 public class AtCommandQueue extends AtCommand {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8000847616413855924L;
+
 	//TODO test
 	public AtCommandQueue(String command) {
 		this(command, null, DEFAULT_FRAME_ID);

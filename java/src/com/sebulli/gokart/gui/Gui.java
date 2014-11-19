@@ -27,6 +27,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,14 +76,22 @@ public class Gui implements ActionListener {
 	 * @param com
 	 *            Reference to the communication object
 	 */
-	public Gui(Communication com) {
+	public Gui(Communication pcom) {
 
 		// Set a reference to the communication object
-		this.com = com;
+		this.com = pcom;
 
 		// Generate the main frame
 		JFrame frame = new JFrame("Go-Kart Control V1.0.0");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+
+		frame.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				timer.stop();
+				com.close();
+				System.exit(0);
+			}
+		});
 
 		// Image panel with go-kart track
 		ImagePanel panel = new ImagePanel("pics/background.png");
@@ -92,7 +102,7 @@ public class Gui implements ActionListener {
 		int amountGokartPanels = Config.getInstance().getPropertyAsInt("panels.amount");
 
 		txdata = new TransmitData(amountGokartPanels);
-		
+
 		for (int i = 1; i <= amountGokartPanels; i++) {
 			GokartPanel gokartPanel = new GokartPanel(Config.getInstance().getProperty("panels." + i + ".name"));
 			gokartPanel.setLocation(Config.getInstance().getPropertyAsInt("panels." + i + ".x"), Config.getInstance()
@@ -178,17 +188,17 @@ public class Gui implements ActionListener {
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		frame.getContentPane().add(controlPanel, BorderLayout.LINE_END);
 
-		// Set main window on top 
+		// Set main window on top
 		frame.setAlwaysOnTop(Config.getInstance().getPropertyAsInt("window.ontop") == 1);
 
-		
 		frame.setResizable(false);
 		frame.pack();
 		frame.setVisible(true);
-		
+
 		timer = new Timer(100, this);
 		timer.setInitialDelay(100);
-		timer.start(); 
+		timer.start();
+
 	}
 
 	/**
@@ -196,38 +206,37 @@ public class Gui implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
+
 		// 100ms Timer
 		if (e.getSource() == timer) {
 			ReceiveData rxdata = com.exchangeData(txdata);
-			for (int i=0; i< gokartPanels.size(); i++) {
-				gokartPanels.get(i).setSignalValue(rxdata.getRSSIValue(i+1));
-				gokartPanels.get(i).setBattValue(rxdata.getBattValue(i+1));
-				gokartPanels.get(i).setFlagValue(rxdata.getPortByte(i+1, 3));
-				for (int ii =0; ii<3; ii++)
-					gokartPanels.get(i).setDisplayValue(ii,rxdata.getPortByte(i+1, ii));
+			for (int i = 0; i < gokartPanels.size(); i++) {
+				gokartPanels.get(i).setSignalValue(rxdata.getRSSIValue(i + 1));
+				gokartPanels.get(i).setBattValue(rxdata.getBattValue(i + 1));
+				gokartPanels.get(i).setFlagValue(rxdata.getPortByte(i + 1, 3));
+				for (int ii = 0; ii < 3; ii++)
+					gokartPanels.get(i).setDisplayValue(ii, rxdata.getPortByte(i + 1, ii));
 			}
 		}
 
-		
 		// Send button was clicked
 		if (e.getSource() == sendButton) {
-			
+
 			// take the values to send them
 			txdata.setDisplayValue(numberControl.getText());
-			
+
 			if (yellowButton.isSelected())
 				txdata.setFlagValue(1);
 			else if (blueButton.isSelected())
 				txdata.setFlagValue(2);
 			else if (redButton.isSelected())
 				txdata.setFlagValue(4);
-			else 
+			else
 				txdata.setFlagValue(0);
-			
+
 			offButton.setSelected(true);
 			numberControl.setText("");
-			
+
 			com.setNewValues();
 		}
 	}

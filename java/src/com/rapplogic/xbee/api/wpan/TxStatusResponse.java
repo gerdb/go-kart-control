@@ -37,6 +37,11 @@ import com.rapplogic.xbee.api.XBeeFrameIdResponse;
  */
 public class TxStatusResponse extends XBeeFrameIdResponse {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4955326104606427942L;
+
 	public enum Status {
 	
 		SUCCESS (0),

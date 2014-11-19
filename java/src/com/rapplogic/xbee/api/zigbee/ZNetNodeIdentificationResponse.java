@@ -30,6 +30,11 @@ import com.rapplogic.xbee.util.DoubleByte;
 
 public class ZNetNodeIdentificationResponse extends XBeeResponse {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4606974768064259262L;
+
 	public enum Option {
 		PACKET_ACKNOWLEDGED (0x01),
 		BROADCAST_PACKET (0x02);

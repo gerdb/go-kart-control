@@ -73,6 +73,8 @@ public class XBee implements IXBee {
 				throw new XBeeException("Attempt to query AP parameter failed");
 			}
 			
+			log.log("Connected to XBee module");
+			
 			if (ap.getValue()[0] != 2) {
 				log.warn("XBee radio is in API mode without escape characters (AP=1).  The radio must be configured in API mode with escape bytes (AP=2) for use with this library.");
 				
@@ -141,7 +143,7 @@ public class XBee implements IXBee {
 			
 			RxTxSerialComm serial = new RxTxSerialComm(); 
 			serial.openSerialPort(port, baudRate);
-			log.log("Connected to XBee module on port:" + " " + port);
+			log.log("Serial port opened:" + " " + port);
 			
 			this.initConnection(serial);
 		} catch (XBeeException e) {

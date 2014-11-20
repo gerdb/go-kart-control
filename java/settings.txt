@@ -26,6 +26,15 @@ battery.full  : 13.5
 signal.poor : -100
 signal.good : -85
 
+
+# What to do, if send button was clicked
+# nothing: Just send
+# number : Clear the number field
+# flag   : Clear the flag field
+# all    : Clear both, number field and flag field
+button.send.clear : all
+
+
 # Time in seconds between 2 cycles of communicate with all panels
 communication.pause : 10
 

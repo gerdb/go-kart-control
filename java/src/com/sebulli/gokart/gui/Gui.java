@@ -69,7 +69,7 @@ public class Gui implements ActionListener {
 	private Communication com = null;
 	private Timer timer;
 	private TransmitData txdata;
-
+	private String buttonClear = "";
 	/**
 	 * Constructor of the gui
 	 * 
@@ -97,6 +97,10 @@ public class Gui implements ActionListener {
 		ImagePanel panel = new ImagePanel("pics/background.png");
 		panel.setLayout(null);
 
+		// get the behavior when clicking the send button
+		buttonClear = Config.getInstance().getProperty("button.send.clear");
+		
+		
 		// Generate the go-kart panels
 		// The amount depends on the settings in the config file
 		int amountGokartPanels = Config.getInstance().getPropertyAsInt("panels.amount");
@@ -234,8 +238,11 @@ public class Gui implements ActionListener {
 			else
 				txdata.setFlagValue(0);
 
-			offButton.setSelected(true);
-			numberControl.setText("");
+			// Reset the control elements
+			if (buttonClear.equalsIgnoreCase("flag") || buttonClear.equalsIgnoreCase("all"))
+				offButton.setSelected(true);
+			if (buttonClear.equalsIgnoreCase("number") || buttonClear.equalsIgnoreCase("all"))
+				numberControl.setText("");
 
 			com.setNewValues();
 		}

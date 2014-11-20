@@ -354,7 +354,8 @@ public class Communication {
 	 * Close the communication
 	 */
 	public void close() {
-		xbee.close();
+		if (xbee.isConnected())
+			xbee.close();
 	}
 
 }

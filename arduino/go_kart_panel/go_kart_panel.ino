@@ -66,6 +66,10 @@ void setup() {
   
 }
 
+/**
+ * Shift out 4 bytes to the 74HC595 register
+ *
+ */
 void writeShiftRegistersAll(void) {
   
   // Write data to the shift register in the order
@@ -81,27 +85,19 @@ void writeShiftRegistersAll(void) {
   
 }
 
+/**
+ * Shift out one byte
+ *
+ */
 void writeShiftRegistersByte(uint8_t data) {
-  int i;
-  
-  for (i=0; i<8; i++) {
-      
-    // Set the SDATA output corresponding on the bit value
-    if (data & 0x80)
-      digitalWrite(SDATA_Pin, HIGH);
-    else
-      digitalWrite(SDATA_Pin, LOW);
-      
-    //Clock
-    digitalWrite(SCLK_Pin, HIGH);
-    digitalWrite(SCLK_Pin, LOW);
-      
-    // next bit
-    data <<= 1;
-  } 
-
+  shiftOut(SDATA_Pin, SCLK_Pin, MSBFIRST, data);
 }
 
+
+/**
+ * Display self test
+ *
+ */
 void displayTest(void) {
   int i,ii;
 

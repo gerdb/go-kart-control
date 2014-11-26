@@ -235,7 +235,7 @@ public class Communication {
 					Logger.getLogger().logEnd("✓");
 				} else {
 					// No signal
-					rxdata.setRSSIValue(rssi_panel_index, 0);
+					rxdata.setRSSIValue(panel_index, 0);
 					Logger.getLogger().logEnd("?");
 				}
 				

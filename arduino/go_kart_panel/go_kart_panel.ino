@@ -26,7 +26,7 @@
 #define SW_VERSION 001
 
 int timeoutCnt = 0;
-int timeout = 100;
+int timeout = 1000;
 boolean isTimeout = false;
 
 /**
@@ -44,6 +44,9 @@ void setup() {
   // initialize the display module
   Display_Init();
   
+  // initialize the radio module
+  Radio_Init();
+  
   // Restart the timeout after the initialization
   timeoutCnt = 0;
   
@@ -58,7 +61,7 @@ void setup() {
 void loop() {
   Power_Task();
   Display_Task();
-  
+  Radio_Task();
 }
 
 /**

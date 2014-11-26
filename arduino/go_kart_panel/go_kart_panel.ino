@@ -19,21 +19,35 @@
 *
 */
 
+// http://playground.arduino.cc/uploads/Code/TimerOne.zip
+#include "TimerOne.h"
 
 // Firmware version will be displayed after reset
 #define SW_VERSION 001
+
+int timeoutCnt = 0;
+int timeout = 100;
+boolean isTimeout = false;
 
 /**
  * The setup for the whole project
  *
  */
-void setup() {                
+void setup() {
+
+  Timer1.initialize(100000);
+  Timer1.attachInterrupt(task100ms);
+  
+  // initialize the power module
+  Power_Init();
   
   // initialize the display module
   Display_Init();
   
-  // initialize the power module
-  Power_Init();
+  // Restart the timeout after the initialization
+  timeoutCnt = 0;
+  
+
 }
 
 
@@ -47,4 +61,19 @@ void loop() {
   
 }
 
+/**
+ * The 100ms task
+ *
+ */
+void task100ms() {
+
+  // Timeout counter
+  if (timeoutCnt < timeout) {
+    timeoutCnt ++;
+    isTimeout = false;
+  }
+  else {
+    isTimeout = true;
+  }
+}
 

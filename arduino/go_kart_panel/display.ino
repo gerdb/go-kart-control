@@ -42,7 +42,9 @@ const uint8_t CODE7SEG[10] = {
 };
 
 extern int batteryValue;
-
+extern boolean lowVoltage;
+extern boolean isTimeout;
+extern int timeoutCnt;
 /**
  * Initialize the display
  *
@@ -70,12 +72,21 @@ void Display_Init() {
  */
 void Display_WriteAll(void) {
   
-  // Write data to the shift register in the order
-  // how the shift registers are placed on the PCB
-  Display_WriteByte(shiftReg[2]); // P3
-  Display_WriteByte(shiftReg[0]); // P6
-  Display_WriteByte(shiftReg[1]); // P5
-  Display_WriteByte(shiftReg[3]); // P2
+  // switch off the display in low voltage condition
+  if (lowVoltage || isTimeout) {
+    Display_WriteByte(0);
+    Display_WriteByte(0);
+    Display_WriteByte(0);
+    Display_WriteByte(0);
+  }
+  else {
+    // Write data to the shift register in the order
+    // how the shift registers are placed on the PCB
+    Display_WriteByte(shiftReg[2]); // P3
+    Display_WriteByte(shiftReg[0]); // P6
+    Display_WriteByte(shiftReg[1]); // P5
+    Display_WriteByte(shiftReg[3]); // P2
+  }
    
   // Put the data to the outputs
   digitalWrite(SLATCH_Pin, HIGH);
@@ -126,23 +137,8 @@ void Display_Number(int nr) {
  *
  */
 void Display_Test(void) {
-  int i,ii;
-
+  
   Display_Clear();
-  delay(1000);
-  
-  // Test each segment/ each bit of the 4 8-bit shift registers
-  for (i=0; i<4; i++) {
-    shiftReg[i] = 1;
-    
-    for (ii=0; ii<8; ii++) {
-       Display_WriteAll();
-      delay(200);
-      shiftReg[i] <<= 1;
-    }
-    shiftReg[i] = 0;
-  }
-  
   delay(500);
   
   // Switch on each segment
@@ -177,5 +173,7 @@ void Display_Test(void) {
  *
  */
 void Display_Task() {
-  Display_Number(batteryValue); 
+//  Display_Number(batteryValue); 
+    Display_Number(timeoutCnt); 
+  
 }

@@ -20,9 +20,11 @@
 */
 
 
-int VBAT_PIN = A5;     // analog input pin to read the battery voltage
-int batteryValue = 0;  // battery voltage in 0.1V units
+int VBAT_PIN = A5;         // analog input pin to read the battery voltage
+int batteryValue = 0;      // battery voltage in 0.1V units
+boolean lowVoltage = true; // low voltage indicator
 
+#define LOWVOLTAGE_THRESHOLD 60 // in 0.1V units 
 
 /**
  * Initialize the power module
@@ -50,6 +52,12 @@ void Power_ReadVoltage() {
   
   batteryValue = analogRead(VBAT_PIN);  
   batteryValue = batteryValue * 5 / 32 - batteryValue / 512;
+  
+  // low voltage detection with 0.5V hysteresis
+  if (batteryValue < LOWVOLTAGE_THRESHOLD)
+    lowVoltage = true;
+  if (batteryValue > (LOWVOLTAGE_THRESHOLD+5))
+    lowVoltage = false;
 }
 
 /**

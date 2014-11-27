@@ -172,12 +172,12 @@ public class Communication {
 			int[] payload = new int[10];
 			payload[0] = 0x55;
 			payload[1] = 0xAA;
-			payload[2] = txdata.getDisplayValue()[0];
-			payload[3] = txdata.getDisplayValue()[1];
-			payload[4] = txdata.getDisplayValue()[2];
-			payload[5] = txdata.getFlagValue();
-			payload[6] = txdata.getPowerValue(panel_index);
-			payload[7] = 120; // reserved
+			payload[2] = txdata.getDisplayValue()[0]; // Display left
+			payload[3] = txdata.getDisplayValue()[1]; // Display middle
+			payload[4] = txdata.getDisplayValue()[2]; // Display right
+			payload[5] = txdata.getFlagValue();       // Status LEDs
+			payload[6] = txdata.getPowerValue(panel_index); // Power
+			payload[7] = 4; // Timeout in 10ms 
 			payload[8] = 0; // reserved
 			payload[9] = 0; // reserved
 
@@ -216,12 +216,12 @@ public class Communication {
 
 				
 			// Try it again
-			if ((repeatCnt < repeat) && !received) {
+			if ((repeatCnt < repeat) && !(received && (rssi_panel_index == panel_index))) {
 				commState = CommState.TransmitData;
 			} else {
 				
 				
-				if (received) {
+				if (received && (rssi_panel_index == panel_index)) {
 					
 					// We received something, so get the RSSI value
 					try {

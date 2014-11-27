@@ -28,6 +28,7 @@
 int timeoutCnt = 0;
 int timeout = 1000;
 boolean isTimeout = false;
+boolean is100msTick = false;
 
 /**
  * The setup for the whole project
@@ -60,8 +61,13 @@ void setup() {
  */
 void loop() {
   Power_Task();
-  Display_Task();
   Radio_Task();
+  
+  // Generate a 100ms task
+  if (is100msTick) {
+    Display_Task_100ms();
+    is100msTick = false;
+  }
 }
 
 /**
@@ -76,7 +82,14 @@ void task100ms() {
     isTimeout = false;
   }
   else {
+    if (!isTimeout) {
+      // After timeout set the power back to the maximum value
+      Radio_SetMaxPwr();
+    }
     isTimeout = true;
   }
+  
+  is100msTick = true;
+  
 }
 

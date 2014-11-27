@@ -174,8 +174,10 @@ void Display_Test(void) {
  * Display task called in the main loop
  *
  */
-void Display_Task() {
+void Display_Task_100ms() {
 //  Display_Number(batteryValue); 
-    Display_Number(xbeetest); 
-  
+    //Display_Number(xbeetest); 
+    
+    // Update the display 
+    Display_WriteAll();
 }

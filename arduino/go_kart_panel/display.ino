@@ -45,7 +45,6 @@ extern int batteryValue;
 extern boolean lowVoltage;
 extern boolean isTimeout;
 extern int timeoutCnt;
-extern int xbeetest;
 
 /**
  * Initialize the display
@@ -175,9 +174,6 @@ void Display_Test(void) {
  *
  */
 void Display_Task_100ms() {
-//  Display_Number(batteryValue); 
-    //Display_Number(xbeetest); 
-    
     // Update the display 
     Display_WriteAll();
 }

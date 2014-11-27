@@ -23,8 +23,8 @@ battery.full  : 13.5
 
 # Signal strength indicator
 # Unit is dbm
-signal.poor : -100
-signal.good : -85
+signal.poor : -120
+signal.good : -60
 
 
 # What to do, if send button was clicked

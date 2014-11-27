@@ -41,15 +41,15 @@ ModemStatusResponse msr = ModemStatusResponse();
 XBeeAddress64 addr64 = XBeeAddress64(ADDR_HIGH, ADDR_LOW);
 ZBTxRequest zbTx = ZBTxRequest(addr64, txData, sizeof(txData));
 
-int xbeetest = 0;
 uint8_t RFPower = 0;
 uint8_t RFPowerOld = 0;
 
 boolean sendBack = false;
 
 // AT commands
-uint8_t plCmd[] = {'P','L','0'};
-AtCommandRequest atRequest = AtCommandRequest(plCmd);
+uint8_t plCmd[] = {'P','L'};
+uint8_t plVal[] = {'4'};
+AtCommandRequest atRequest = AtCommandRequest(plCmd, plVal , sizeof(plVal));
 
 // global variables
 extern uint8_t shiftReg[4];
@@ -119,12 +119,14 @@ void Radio_Task() {
       }
     } 
     // Some changes in RF power setpoint ?
-    if (RFPowerOld != RFPowerOld) {
+    if (RFPower != RFPowerOld) {
         
         // Set the new power value
         if (RFPower <= 4) {
-          plCmd[2] = '0' + RFPower;
-          atRequest.setCommand(plCmd);  
+          plVal[0] = RFPower;
+          atRequest.setCommand(plCmd);
+          atRequest.setCommandValue(plVal); 
+          atRequest.setCommandValueLength(sizeof(plVal)); 
           // send the AT command
           xbee.send(atRequest);
         }

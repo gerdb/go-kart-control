@@ -28,7 +28,7 @@ int SLATCH_Pin  = 13;
 uint8_t shiftReg[4] = {0,0,0,0};
 
 // all 10 7-segment numbers
-const uint8_t CODE7SEG[10] = {
+const uint8_t CODE7SEG[16] = {
   0b0111111, // 0
   0b0000110, // 1
   0b1011011, // 2
@@ -38,7 +38,13 @@ const uint8_t CODE7SEG[10] = {
   0b1111101, // 6
   0b0000111, // 7
   0b1111111, // 8
-  0b1101111  // 9
+  0b1101111, // 9
+  0b1110111, // A
+  0b1111100, // B
+  0b0111001, // C
+  0b1011110, // D
+  0b1111001, // E
+  0b1110001  // F
 };
 
 extern int batteryValue;
@@ -117,6 +123,22 @@ void Display_Clear() {
 }
 
 /**
+ * Show all segments
+ *
+ */
+void Display_BlinkAll() {
+  // Switch on each segment
+  shiftReg[0] = 0xFF;
+  shiftReg[1] = 0xFF;
+  shiftReg[2] = 0xFF;
+  shiftReg[3] = 0xFF;
+  Display_WriteAll();
+  delay(2000);
+
+  Display_Clear();
+}
+
+/**
  * Display a number from 000 to 999
  *
  */
@@ -142,17 +164,6 @@ void Display_Test(void) {
   Display_Clear();
   delay(500);
   
-  // Switch on each segment
-  shiftReg[0] = 0xFF;
-  shiftReg[1] = 0xFF;
-  shiftReg[2] = 0xFF;
-  shiftReg[3] = 0xFF;
-  Display_WriteAll();
-  delay(2000);
-
-  Display_Clear();
-  delay(500);
-
   // Show the battery voltage
   Power_ReadVoltage();
   Display_Number(batteryValue);
@@ -173,7 +184,29 @@ void Display_Test(void) {
  * Display task called in the main loop
  *
  */
-void Display_Task_100ms() {
+void Display_ShowAddr(uint32_t addr) {
+  int i;
+
+  Display_Clear();
+  delay(1000);
+  
+  for (i=0; i<4; i++) {
+    shiftReg[1] = CODE7SEG[(addr >> 28) & 0x0000000F];
+    shiftReg[2] = CODE7SEG[(addr >> 24) & 0x0000000F];
     // Update the display 
     Display_WriteAll();
+    addr <<= 8;
+    delay(3000);
+    Display_Clear();
+    delay(500);
+  }
+}
+
+/**
+ * Display task called in the main loop
+ *
+ */
+void Display_Task_100ms() {
+   // Update the display 
+   Display_WriteAll();
 }

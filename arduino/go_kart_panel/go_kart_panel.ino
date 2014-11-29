@@ -23,7 +23,7 @@
 #include "TimerOne.h"
 
 // Firmware version will be displayed after reset
-#define SW_VERSION 001
+#define SW_VERSION 100
 
 int timeoutCnt = 0;
 int timeout = 1000;

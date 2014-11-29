@@ -42,7 +42,7 @@ communication.pause : 10
 communication.repeat : 3
 
 # Amount of panels
-panels.amount : 1
+panels.amount : 2
 
 # Configure each panel
 # .name   Name of the panel (or number)
@@ -58,7 +58,7 @@ panels.1.y      : 420
 panels.1.power  : 0
 
 panels.2.name   : 102
-panels.2.serial : 0013A200 FFFFFFFF
+panels.2.serial : 0013A200 40A28F4A
 panels.2.x      : 690
 panels.2.y      : 380
 panels.2.power  : 0

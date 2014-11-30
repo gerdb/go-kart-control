@@ -41,6 +41,9 @@ communication.pause : 10
 # How many times should a transmission be repeated
 communication.repeat : 3
 
+# If a panel does not receive a signal during this amount of cycles, the display is switched off
+communication.timeout : 3
+
 # Amount of panels
 panels.amount : 2
 

@@ -67,7 +67,8 @@ public class Communication {
 	private int repeat = 1;
 	private int repeatCnt = 0;
 	static XBee xbee = new XBee();
-
+	private int cycleTimeout;
+	private int ncycleTimeout;
 
 	/**
 	 * Communication module Start the cyclic task
@@ -97,6 +98,8 @@ public class Communication {
 		
 		// Repeat n times
 		repeat = Config.getInstance().getPropertyAsInt("communication.repeat");
+		if (repeat<1)
+			repeat = 1;
 
 		// Read the parameter communication.pause and scale it to 100ms units
 		panels_amount = Config.getInstance().getPropertyAsInt("panels.amount");
@@ -104,6 +107,19 @@ public class Communication {
 			// T: Error message
 			Logger.getLogger().error(_("Parameter panels.amount must be set to at least 1."));
 
+		// Get the timeout setting
+		ncycleTimeout = Config.getInstance().getPropertyAsInt("communication.timeout");
+		// Calculate the cycle timeout in 0.1s units
+		cycleTimeout = (communication_pause + ( panels_amount * repeat * 10)) * ncycleTimeout;
+		// scale it to 10s
+		cycleTimeout = cycleTimeout / 100 + 1;
+		// Limit it
+		if (cycleTimeout < 1)
+			cycleTimeout = 1;
+		if (cycleTimeout > 255)
+			cycleTimeout = 255;
+		
+		
 		commState = CommState.Initialize;
 	}
 
@@ -177,7 +193,7 @@ public class Communication {
 			payload[4] = txdata.getDisplayValue()[2]; // Display right
 			payload[5] = txdata.getFlagValue();       // Status LEDs
 			payload[6] = txdata.getPowerValue(panel_index); // Power
-			payload[7] = 4; // Timeout in 10ms 
+			payload[7] = cycleTimeout; // Timeout in 10ms 
 			payload[8] = 0; // reserved
 			payload[9] = 0; // reserved
 

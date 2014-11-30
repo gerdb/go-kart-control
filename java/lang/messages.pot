@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: emailATsebulli.com\n"
-"POT-Creation-Date: 2014-11-09 10:12+0100\n"
+"POT-Creation-Date: 2014-11-30 14:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,74 +17,39 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#. T: ToolTip text
+#: ../src/com/sebulli/gokart/gui/GokartPanel.java:171
+msgid "No signal"
+msgstr ""
+
 #. T: Button text
-#: ../src/com/sebulli/gokart/gui/Gui.java:108
+#: ../src/com/sebulli/gokart/gui/Gui.java:136
 msgid "Send"
 msgstr ""
 
 #. T: Text of radio buttons
-#: ../src/com/sebulli/gokart/gui/Gui.java:119
-msgid "red"
-msgstr ""
-
-#. T: Text of radio buttons
-#: ../src/com/sebulli/gokart/gui/Gui.java:121
+#: ../src/com/sebulli/gokart/gui/Gui.java:147
 msgid "yellow"
 msgstr ""
 
 #. T: Text of radio buttons
-#: ../src/com/sebulli/gokart/gui/Gui.java:123
+#: ../src/com/sebulli/gokart/gui/Gui.java:149
 msgid "blue"
 msgstr ""
 
-#. T: Status message
-#: ../src/com/sebulli/gokart/comm/Communication.java:63
-msgid "Closing serial port"
-msgstr ""
-
-#. T: Status message
-#: ../src/com/sebulli/gokart/comm/Communication.java:68
-msgid "Serial port already closed"
+#. T: Text of radio buttons
+#: ../src/com/sebulli/gokart/gui/Gui.java:151
+msgid "red"
 msgstr ""
 
 #. T: Error message
-#: ../src/com/sebulli/gokart/comm/Communication.java:86
-msgid "Error while sending"
-msgstr ""
-
-#. T: Status message
-#: ../src/com/sebulli/gokart/comm/Communication.java:101
-msgid "Serial port already opened"
-msgstr ""
-
-#. T: Status message
 #: ../src/com/sebulli/gokart/comm/Communication.java:108
-msgid "Serial ports found:"
+msgid "Parameter panels.amount must be set to at least 1."
 msgstr ""
 
-#. T: Status message
-#: ../src/com/sebulli/gokart/comm/Communication.java:116
-msgid "Serial port not found:"
-msgstr ""
-
-#. T: Status message
-#: ../src/com/sebulli/gokart/comm/Communication.java:122
-msgid "Opening serial port:"
-msgstr ""
-
-#. T: Status message
-#: ../src/com/sebulli/gokart/comm/Communication.java:125
-msgid "Serial port is blocked"
-msgstr ""
-
-#. T: Status message
-#: ../src/com/sebulli/gokart/comm/Communication.java:131
-msgid "No access to output stream"
-msgstr ""
-
-#. T: Status message
-#: ../src/com/sebulli/gokart/comm/Communication.java:145
-msgid "Could not set port parameters"
+#. T: Error log
+#: ../src/com/sebulli/gokart/comm/Communication.java:134
+msgid "Address must be 16 characters long:"
 msgstr ""
 
 #. T: Error message

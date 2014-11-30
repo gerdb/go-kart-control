@@ -67,20 +67,19 @@ panels.2.y      : 380
 panels.2.power  : 0
 
 panels.3.name   : 103
-panels.3.serial : 0013A200 FFFFFFFF
+panels.3.serial : 0013A200 00000000
 panels.3.x      : 450
 panels.3.y      : 300
 panels.3.power  : 0
 
 panels.4.name   : 104
-panels.4.serial : 0013A200 FFFFFFFF
+panels.4.serial : 0013A200 00000000
 panels.4.x      : 230
 panels.4.y      : 5
 panels.4.power  : 0
 
 panels.5.name   : 105
-panels.5.serial : 0013A200 FFFFFFFF
+panels.5.serial : 0013A200 00000000
 panels.5.x      : 140
 panels.5.y      : 320
 panels.5.power  : 0
-

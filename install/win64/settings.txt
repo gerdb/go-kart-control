@@ -1,0 +1,85 @@
+# Configuration file for Go-kart control
+
+
+# Set the language and country. For example to: da_DK.
+# Leave it empty to use the system settings
+locale :
+
+
+# Set to 1, if main window should be always on top.
+# Else set it to 0.
+window.ontop : 1
+
+# Set serial port
+# For Windows it's something like COM1. See device manager.
+# For Linux it's something like: ttyUSB0. See folder /dev/
+port : COM1
+
+# Battery voltage
+# The lower (empty) and upper limit (full) for battery voltage.
+# Unit is volts.
+battery.empty : 10.0
+battery.full  : 13.5
+
+# Signal strength indicator
+# Unit is dbm
+signal.poor : -120
+signal.good : -60
+
+
+# What to do, if send button was clicked
+# nothing: Just send
+# number : Clear the number field
+# flag   : Clear the flag field
+# all    : Clear both, number field and flag field
+button.send.clear : all
+
+
+# Time in seconds between 2 cycles of communicate with all panels
+communication.pause : 10
+
+# How many times should a transmission be repeated
+communication.repeat : 3
+
+# If a panel does not receive a signal during this amount of cycles, the display is switched off
+communication.timeout : 3
+
+# Amount of panels
+panels.amount : 2
+
+# Configure each panel
+# .name   Name of the panel (or number)
+# .serial Radio serial number high and low
+# .x      X-position
+# .y      Y-position
+# .power  0 .. 4  (0=1mW, 1=23mW, 2=100mW, 3=158mW, 4=316mW)
+
+panels.1.name   : 101
+panels.1.serial : 0013A200 40A28F4B
+panels.1.x      : 30
+panels.1.y      : 420
+panels.1.power  : 0
+
+panels.2.name   : 102
+panels.2.serial : 0013A200 40A28F4A
+panels.2.x      : 690
+panels.2.y      : 380
+panels.2.power  : 0
+
+panels.3.name   : 103
+panels.3.serial : 0013A200 00000000
+panels.3.x      : 450
+panels.3.y      : 300
+panels.3.power  : 0
+
+panels.4.name   : 104
+panels.4.serial : 0013A200 00000000
+panels.4.x      : 230
+panels.4.y      : 5
+panels.4.power  : 0
+
+panels.5.name   : 105
+panels.5.serial : 0013A200 00000000
+panels.5.x      : 140
+panels.5.y      : 320
+panels.5.power  : 0

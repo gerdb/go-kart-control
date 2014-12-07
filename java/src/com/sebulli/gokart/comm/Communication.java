@@ -62,6 +62,8 @@ public class Communication {
 	private ReceiveData rxdata;
 	private List<XBeeAddress64> destAdresses;
 	private List<String> panelNames;
+	private List<Double> BatteryCorrection;
+	private List<Boolean> Enabled;
 	private boolean received = false;
 	private int waitRxCnt = 0;
 	private int repeat = 1;
@@ -69,6 +71,7 @@ public class Communication {
 	static XBee xbee = new XBee();
 	private int cycleTimeout;
 	private int ncycleTimeout;
+	private boolean toggle = false;
 
 	/**
 	 * Communication module Start the cyclic task
@@ -88,9 +91,15 @@ public class Communication {
 		destAdresses.add(new XBeeAddress64());
 		panelNames = new ArrayList<String>();
 		panelNames.add("");
+		BatteryCorrection = new ArrayList<Double>();
+		BatteryCorrection.add(1.0);
+		Enabled = new ArrayList<Boolean>();
+		Enabled.add(true);
 		for (int i = 1; i <= amountGokartPanels; i++) {
 			destAdresses.add(new XBeeAddress64(FormatAddress(Config.getInstance().getProperty("panels." + i + ".serial"))));
 			panelNames.add(Config.getInstance().getProperty("panels." + i + ".name"));
+			BatteryCorrection.add(Config.getInstance().getPropertyAsDoubleIfExists("panels." + i + ".vcorr", 1.0));
+			Enabled.add(Config.getInstance().getPropertyAsIntIfExists("panels." + i + ".enabled", 1) == 1);
 		}
 		
 		// Read the parameter communication.pause and scale it to 100ms units
@@ -162,16 +171,27 @@ public class Communication {
 
 		// Set the power of this module
 		case SetPower:
-			try {
-				xbee.sendSynchronous(new AtCommand("PL", txdata.getPowerValue(panel_index)));
-			} catch (XBeeTimeoutException e) {
-				Logger.getLogger().error(e.getMessage());
-			} catch (XBeeException e) {
-				Logger.getLogger().error(e.getMessage());
+			
+			if (Enabled.get(panel_index)) {
+				try {
+					xbee.sendSynchronous(new AtCommand("PL", txdata.getPowerValue(panel_index)));
+				} catch (XBeeTimeoutException e) {
+					Logger.getLogger().error(e.getMessage());
+				} catch (XBeeException e) {
+					Logger.getLogger().error(e.getMessage());
+				}
+				commState = CommState.TransmitData;
+			} else {
+				//Logger.getLogger().log(panelNames.get(panel_index) + " skipped");
+				// Next panel
+				panel_index++;
+				if (panel_index > panels_amount) {
+					panel_index = 1;
+				}
 			}
-
+			
 			repeatCnt = 0;
-			commState = CommState.TransmitData;
+
 			break;
 
 		// Exchange the data
@@ -320,8 +340,8 @@ public class Communication {
 								rxdata.setPortByte(i, ii, rxDataBytes[2 + ii]);
 
 							// Get the battery voltage
-							rxdata.setBattValue(i, ((float)rxDataBytes[7]) / 10);
-							
+							rxdata.setBattValue(i, ((float)rxDataBytes[7]) / 10 * BatteryCorrection.get(i));
+							toggle = !toggle;
 						}
 						
 					}
@@ -345,6 +365,15 @@ public class Communication {
 
 	}
 
+	/**
+	 * Getter for toggle variable
+	 * 
+	 * @return
+	 */
+	public boolean getToggle() {
+		return toggle;
+	}
+	
 	/**
 	 * Opens the communication and initializes the XBee module
 	 */
@@ -374,4 +403,6 @@ public class Communication {
 			xbee.close();
 	}
 
+	
+	
 }

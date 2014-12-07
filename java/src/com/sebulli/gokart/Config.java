@@ -137,11 +137,19 @@ public class Config {
 	 * 
 	 * @param 
 	 * 		key
+	 *      defaultValue
+	 *      ifExists
 	 * @return
 	 * 		The value of the key 
 	 */
-	public int getPropertyAsInt(String key) {
-		String property = getProperty(key);
+	public int getPropertyAsInt(String key, int defaultValue, boolean ifExists) {
+		String property;
+		
+		if (ifExists)
+			property = getPropertyIfExists(key);
+		else
+			property = getProperty(key);
+		
 		if (!property.isEmpty()) {
 			try {
 				return Integer.parseInt(property);
@@ -157,7 +165,7 @@ public class Config {
 	}
 	
 	/**
-	 * Get a property as double by key name
+	 * Get a property as integer by key name
 	 * Returns 0, if it doesn't exist.
 	 * 
 	 * @param 
@@ -165,8 +173,41 @@ public class Config {
 	 * @return
 	 * 		The value of the key 
 	 */
-	public double getPropertyAsDouble(String key) {
-		String property = getProperty(key);
+	public int getPropertyAsInt(String key) {
+		return getPropertyAsInt(key, 0, false);
+	}
+	
+	/**
+	 * Get a property as integer by key name
+	 * Returns 0, if it doesn't exist.
+	 * 
+	 * @param 
+	 * 		key
+	 * @return
+	 * 		The value of the key 
+	 */
+	public int getPropertyAsIntIfExists(String key, int defaultValue) {
+		return getPropertyAsInt(key, defaultValue, true);
+	}
+	
+	/**
+	 * Get a property as double by key name
+	 * Returns 0, if it doesn't exist.
+	 * 
+	 * @param 
+	 * 		key
+	 *      defaultValue if no key exists
+	 * @return
+	 * 		The value of the key 
+	 */
+	public double getPropertyAsDouble(String key, double defaultValue, boolean ifExists) {
+		String property;
+		
+		if (ifExists)
+			property = getPropertyIfExists(key);
+		else
+			property = getProperty(key);
+		
 		if (!property.isEmpty()) {
 			try {
 				return Double.parseDouble(property);
@@ -176,9 +217,38 @@ public class Config {
 				return 0;
 			}
 		} else {
-			return 0;
+			return defaultValue;
 		}
 
+	}
+	
+	
+	
+	/**
+	 * Get a property as double by key name
+	 * Returns 0, if it doesn't exist.
+	 * 
+	 * @param 
+	 * 		key
+	 * 		defaultValue
+	 * @return
+	 * 		The value of the key 
+	 */
+	public double getPropertyAsDoubleIfExists(String key, double defaultValue) {
+		return getPropertyAsDouble(key, defaultValue, true);
+	}
+	
+	/**
+	 * Get a property as double by key name
+	 * Returns 0, if it doesn't exist.
+	 * 
+	 * @param 
+	 * 		key
+	 * @return
+	 * 		The value of the key 
+	 */
+	public double getPropertyAsDouble(String key) {
+		return getPropertyAsDouble(key, 0.0, false);
 	}
 
 }

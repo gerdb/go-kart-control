@@ -70,6 +70,9 @@ public class Gui implements ActionListener {
 	private Timer timer;
 	private TransmitData txdata;
 	private String buttonClear = "";
+	private boolean testMode = false;
+	private int lastRSSIVal = 0;
+	
 	/**
 	 * Constructor of the gui
 	 * 
@@ -105,6 +108,10 @@ public class Gui implements ActionListener {
 		// The amount depends on the settings in the config file
 		int amountGokartPanels = Config.getInstance().getPropertyAsInt("panels.amount");
 
+		
+		// is test mode enabled?
+		testMode = (Config.getInstance().getPropertyAsIntIfExists("testmode", 0) == 1);
+		
 		txdata = new TransmitData(amountGokartPanels);
 
 		for (int i = 1; i <= amountGokartPanels; i++) {
@@ -114,6 +121,7 @@ public class Gui implements ActionListener {
 			gokartPanel.setSerialNumber(Config.getInstance().getProperty("panels." + i + ".serial"));
 			gokartPanels.add(gokartPanel);
 			txdata.setPowerValue(i, Config.getInstance().getPropertyAsInt("panels." + i + ".power"));
+			gokartPanel.setVisible(Config.getInstance().getPropertyAsIntIfExists("panels." + i + ".enabled", 1) == 1);
 			panel.add(gokartPanel);
 		}
 
@@ -213,8 +221,27 @@ public class Gui implements ActionListener {
 
 		// 100ms Timer
 		if (e.getSource() == timer) {
+			
+			
+			// Echo the RSSI signal in test mode
+			if (testMode) {
+				txdata.setDisplayValue(Integer.toString(-lastRSSIVal));
+				
+				if (com.getToggle()) {
+					txdata.setFlagValue(1);
+				} else {
+					txdata.setFlagValue(4);
+				}
+			}
+			
 			ReceiveData rxdata = com.exchangeData(txdata);
+			
 			for (int i = 0; i < gokartPanels.size(); i++) {
+				
+				// The last valid RSSI signal
+				if (rxdata.getRSSIValue(i + 1) != 0)
+					lastRSSIVal = rxdata.getRSSIValue(i + 1);
+				
 				gokartPanels.get(i).setSignalValue(rxdata.getRSSIValue(i + 1));
 				gokartPanels.get(i).setBattValue(rxdata.getBattValue(i + 1));
 				gokartPanels.get(i).setFlagValue(rxdata.getPortByte(i + 1, 3));

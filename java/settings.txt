@@ -75,7 +75,7 @@ panels.2.x       : 690
 panels.2.y       : 380
 panels.2.power   : 0
 panels.2.vcorr   : 1.00
-panels.2.enabled : 0
+panels.2.enabled : 1
 
 panels.3.name    : 003
 panels.3.serial  : 0013A200 00000000

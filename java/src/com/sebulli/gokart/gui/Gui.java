@@ -85,7 +85,7 @@ public class Gui implements ActionListener {
 		this.com = pcom;
 
 		// Generate the main frame
-		JFrame frame = new JFrame("Go-Kart Control V1.0.0");
+		JFrame frame = new JFrame("Go-Kart Control V1.1.0");
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
 		frame.addWindowListener(new WindowAdapter() {

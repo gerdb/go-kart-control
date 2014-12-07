@@ -75,7 +75,7 @@ panels.2.x       : 690
 panels.2.y       : 380
 panels.2.power   : 0
 panels.2.vcorr   : 1.00
-panels.2.enabled : 0
+panels.2.enabled : 1
 
 panels.3.name    : 003
 panels.3.serial  : 0013A200 00000000
@@ -83,7 +83,7 @@ panels.3.x       : 450
 panels.3.y       : 300
 panels.3.power   : 0
 panels.3.vcorr   : 0.995
-panels.3.enabled : 0
+panels.3.enabled : 1
 
 panels.4.name    : 004
 panels.4.serial  : 0013A200 00000000
@@ -91,7 +91,7 @@ panels.4.x       : 230
 panels.4.y       : 5
 panels.4.power   : 0
 panels.4.vcorr   : 0.995
-panels.4.enabled : 0
+panels.4.enabled : 1
 
 panels.5.name    : 005
 panels.5.serial  : 0013A200 00000000
@@ -99,7 +99,7 @@ panels.5.x       : 140
 panels.5.y       : 320
 panels.5.power   : 0
 panels.5.vcorr   : 0.995
-panels.5.enabled : 0
+panels.5.enabled : 1
 
 panels.6.name    : 006
 panels.6.serial  : 0013A200 00000000
@@ -107,4 +107,4 @@ panels.6.x       : 60
 panels.6.y       : 20
 panels.6.power   : 0
 panels.6.vcorr   : 1.015
-panels.6.enabled : 0
+panels.6.enabled : 1

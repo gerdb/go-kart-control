@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2014-jul-16 BZR unknown)-product   date = 2014-10-27T17:47:20 CET
+Cmp-Mod V01 Created by Cvpcb 0.201412131231+5320~19~ubuntu14.04.1-product   date = 2014-12-14T15:10:44 CET
 
 BeginCmp
 TimeStamp = /544E7F07;
@@ -288,10 +288,17 @@ IdModule  = LEDs:LED-0805;
 EndCmp
 
 BeginCmp
+TimeStamp = /548D9FF3;
+Reference = D8;
+ValeurCmp = 1N4148W;
+IdModule  = My:SOD-123;
+EndCmp
+
+BeginCmp
 TimeStamp = /544E7EB0;
 Reference = IC1;
 ValeurCmp = TPS54527;
-IdModule  = SMD_Packages:SSOP8-9;
+IdModule  = SMD_Packages:SOIC-8-N-1EP;
 EndCmp
 
 BeginCmp
@@ -368,13 +375,6 @@ BeginCmp
 TimeStamp = /544E7DE7;
 Reference = P7;
 ValeurCmp = IO8;
-IdModule  = Pin_Headers:Pin_Header_Straight_1x01;
-EndCmp
-
-BeginCmp
-TimeStamp = /544E7DE0;
-Reference = P8;
-ValeurCmp = IO9;
 IdModule  = Pin_Headers:Pin_Header_Straight_1x01;
 EndCmp
 
@@ -550,7 +550,7 @@ BeginCmp
 TimeStamp = /544E7B70;
 Reference = R8;
 ValeurCmp = CG0603MLC_05E;
-IdModule  = Resistors_SMD:R_0805;
+IdModule  = SMD_Packages:SMD-0603;
 EndCmp
 
 BeginCmp
@@ -564,7 +564,7 @@ BeginCmp
 TimeStamp = /544E7B69;
 Reference = R10;
 ValeurCmp = CG0603MLC_05E;
-IdModule  = Resistors_SMD:R_0805;
+IdModule  = SMD_Packages:SMD-0603;
 EndCmp
 
 BeginCmp
@@ -631,22 +631,8 @@ IdModule  = Resistors_SMD:R_0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /544DAC11;
-Reference = R20;
-ValeurCmp = 4k7;
-IdModule  = Resistors_SMD:R_0805;
-EndCmp
-
-BeginCmp
 TimeStamp = /544D8DEC;
 Reference = R21;
-ValeurCmp = 10k;
-IdModule  = Resistors_SMD:R_0805;
-EndCmp
-
-BeginCmp
-TimeStamp = /544DACA4;
-Reference = R22;
 ValeurCmp = 10k;
 IdModule  = Resistors_SMD:R_0805;
 EndCmp
@@ -669,14 +655,7 @@ BeginCmp
 TimeStamp = /544E7C10;
 Reference = SW1;
 ValeurCmp = RESET;
-IdModule  = Discret:SW_PUSH_SMALL;
-EndCmp
-
-BeginCmp
-TimeStamp = /544E7DCA;
-Reference = SW2;
-ValeurCmp = SW;
-IdModule  = Discret:SW_PUSH_SMALL;
+IdModule  = My:SW_PUSH_SMALL;
 EndCmp
 
 BeginCmp
@@ -774,7 +753,7 @@ BeginCmp
 TimeStamp = /544E7D49;
 Reference = U12;
 ValeurCmp = FT232RL;
-IdModule  = SMD_Packages:SO-28;
+IdModule  = SMD_Packages:SSOP-28;
 EndCmp
 
 BeginCmp

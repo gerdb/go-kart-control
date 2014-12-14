@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: emailATsebulli.com\n"
-"POT-Creation-Date: 2014-11-30 14:00+0100\n"
+"POT-Creation-Date: 2014-12-14 08:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,33 +23,41 @@ msgid "No signal"
 msgstr ""
 
 #. T: Button text
-#: ../src/com/sebulli/gokart/gui/Gui.java:136
+#: ../src/com/sebulli/gokart/gui/Gui.java:143
 msgid "Send"
 msgstr ""
 
 #. T: Text of radio buttons
-#: ../src/com/sebulli/gokart/gui/Gui.java:147
+#: ../src/com/sebulli/gokart/gui/Gui.java:154
 msgid "yellow"
 msgstr ""
 
 #. T: Text of radio buttons
-#: ../src/com/sebulli/gokart/gui/Gui.java:149
+#: ../src/com/sebulli/gokart/gui/Gui.java:156
 msgid "blue"
 msgstr ""
 
 #. T: Text of radio buttons
-#: ../src/com/sebulli/gokart/gui/Gui.java:151
+#: ../src/com/sebulli/gokart/gui/Gui.java:158
 msgid "red"
 msgstr ""
 
 #. T: Error message
-#: ../src/com/sebulli/gokart/comm/Communication.java:108
+#: ../src/com/sebulli/gokart/comm/Communication.java:125
 msgid "Parameter panels.amount must be set to at least 1."
 msgstr ""
 
 #. T: Error log
-#: ../src/com/sebulli/gokart/comm/Communication.java:134
+#: ../src/com/sebulli/gokart/comm/Communication.java:151
 msgid "Address must be 16 characters long:"
+msgstr ""
+
+#: ../src/com/sebulli/gokart/comm/Communication.java:316
+msgid "Resetting the XBee module"
+msgstr ""
+
+#: ../src/com/sebulli/gokart/comm/Communication.java:322
+msgid "Error resetting the XBee module"
 msgstr ""
 
 #. T: Error message

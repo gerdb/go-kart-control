@@ -21,35 +21,19 @@
 
 package com.sebulli.gokart.comm;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sebulli.gokart.gui.LookUp7Segment;
 
 
 
 public class TransmitData {
 	
-	private List<Integer> powerValues;
 	private int flagValue = 0;
 	private int watchdogTimeout = 0;
 	private byte[] displayValues = new byte[3];
 	
 	public TransmitData(int panels) {
-		powerValues = new ArrayList<Integer>();
-		for (int i = 0; i <= panels; i++) {
-			powerValues.add(0);
-		}
 	}
 	
-	public void setPowerValue(int i, int value) {
-		powerValues.set(i, value);
-	}
-	
-	public int getPowerValue(int i) {
-		return powerValues.get(i);
-	}
-
 	public byte[] getDisplayValue() {
 		return displayValues;
 	}
@@ -59,6 +43,7 @@ public class TransmitData {
 		s = s.substring(s.length()-3);
 		for (int i = 0; i< 3; i++)
 			displayValues[i] = LookUp7Segment.get7SegmentCode((char)(s.getBytes()[i]));
+		
 	}
 
 	public int getFlagValue() {

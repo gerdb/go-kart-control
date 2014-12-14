@@ -29,6 +29,7 @@ import com.rapplogic.xbee.XBeeConnection;
 import com.rapplogic.xbee.util.ByteUtils;
 import com.sebulli.gokart.Logger;
 
+import static com.sebulli.gokart.Translate._;
 /**
  * This is an API for communicating with Digi XBee 802.15.4 and ZigBee radios
  * via the serial port
@@ -45,6 +46,7 @@ public class XBee implements IXBee {
 	private XBeeConnection xbeeConnection;
 	private InputStreamThread parser;	
 	private XBeeConfiguration conf;
+	private RxTxSerialComm serial = null;
 	
 	public XBee() {
 		this.conf = new XBeeConfiguration().withMaxQueueSize(100).withStartupChecks(true);
@@ -61,6 +63,44 @@ public class XBee implements IXBee {
 
 	public XBee(XBeeConfiguration conf) {
 		this.conf = conf;
+	}
+	
+	/**
+	 * Generate a reset on DTR line
+	 */
+	public void reset() throws XBeeException {
+		
+		try {
+			if (serial != null) {
+				serial.serialPort.setDTR(true);
+				Thread.sleep(1000);
+				serial.serialPort.setDTR(false);
+				Thread.sleep(500);
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+	
+	/**
+	 * Set the XBee module into AP2 Mode
+	 */
+	public void setAP2Mode() throws XBeeException {
+		// Set AP2 mode
+		try {
+			Thread.sleep(1100);
+			parser.setIgnoreRX(true);
+			this.sendPacket("+++");
+			Thread.sleep(1100);
+			this.sendPacket("ATAP 2\r");
+			Thread.sleep(200);
+			this.sendPacket("ATCN\r");
+			Thread.sleep(200);
+			parser.setIgnoreRX(false);
+		} catch (InterruptedException e) {
+		} catch (IOException e2) {
+			e2.printStackTrace();
+			throw new XBeeException(_("IO Exception during initializing the XBee module"));
+		}	
 	}
 	
 	private void doStartupChecks() throws XBeeException {
@@ -124,10 +164,31 @@ public class XBee implements IXBee {
 				log.log("Firmware version is " + ByteUtils.toBase16(vr.getValue()));
 			}
 			
+			AtCommandResponse sh = this.sendAtCommand(new AtCommand("SH"));
+			
+			String ah="", al="";
+			if (sh.isOk()) {
+				ah = ByteUtils.toBase16(sh.getValue());
+				ah = ah.replace("0x", "");
+				ah = ah.replace(",", "");
+				ah = ah.toUpperCase();
+			}
+			
+			AtCommandResponse sl = this.sendAtCommand(new AtCommand("SL"));
+			
+			if (sl.isOk()) {
+				al = ByteUtils.toBase16(sl.getValue());
+				al = al.replace("0x", "");
+				al = al.replace(",", "");
+				al = al.toUpperCase();
+			}
+			log.log("Serial address: " + ah + " " +al);
+			
 			this.clearResponseQueue();
+			
 		} catch (XBeeTimeoutException ex) {
-			throw new XBeeException("AT command timed-out while attempt to set/read in API mode.  The XBee radio must be in API mode (AP=2) to use with this library");
-		}		
+			throw new XBeeException(_("No connection to XBee module. Is it in API mode (AP=2)?"));
+		}	
 	}
 	
 	/**
@@ -141,8 +202,9 @@ public class XBee implements IXBee {
 				throw new IllegalStateException("Cannot open new connection -- existing connection is still open.  Please close first");
 			}
 			
-			RxTxSerialComm serial = new RxTxSerialComm(); 
+			serial = new RxTxSerialComm();
 			serial.openSerialPort(port, baudRate);
+			serial.serialPort.setDTR(false);
 			log.log("Serial port opened:" + " " + port);
 			
 			this.initConnection(serial);
@@ -170,6 +232,9 @@ public class XBee implements IXBee {
 			this.xbeeConnection = conn;
 			
 			parser = new InputStreamThread(this.xbeeConnection, conf);
+			
+			// Set the module into AP2 mode
+			setAP2Mode();
 			
 			// startup heuristics
 			if (conf.isStartupChecks()) {
@@ -202,6 +267,16 @@ public class XBee implements IXBee {
 		}
 	}
 	
+	public void removeAllPacketListener() {
+		if (parser == null) {
+			throw new IllegalStateException("No connection");
+		}
+		
+		synchronized (parser.getPacketListenerList()) {
+			this.parser.getPacketListenerList().clear();
+		}
+	}
+	
 	public void sendRequest(XBeeRequest request) throws IOException {
 		log.info("Sending request to XBee: " + request);
 		this.sendPacket(request.getXBeePacket());
@@ -220,6 +295,23 @@ public class XBee implements IXBee {
 	 */
 	public void sendPacket(XBeePacket packet) throws IOException {	
 		this.sendPacket(packet.getByteArray());
+	}
+	
+	/** 
+	 * send a packet as string
+	 * Not thread safe.
+	 *  
+	 * @param packet
+	 * @throws IOException
+	 */
+	public void sendPacket(String packet) throws IOException {
+		int[] ints = new int[packet.getBytes().length];
+		int i=0;
+		for (byte  b : packet.getBytes()) {
+			ints[i] = b;
+			i++;
+		}
+		this.sendPacket(ints);
 	}
 	
 	/**
@@ -442,6 +534,7 @@ public class XBee implements IXBee {
 			this.xbeeConnection.getOutputStream().close();
 		} catch (IOException e) {
 			log.warn("Failed to close output stream", e);
+			throw new IllegalStateException("Failed to close output stream");
 		}
 		
 		parser = null;

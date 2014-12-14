@@ -24,6 +24,11 @@ int SDATA_Pin   = 11;
 int SCLK_Pin    = 12;
 int SLATCH_Pin  = 13;
 
+// Pins display test
+int DISP_TEST_Pin = 2;
+int OUT_LOW_Pin   = 3; 
+
+
 // Content of the 4 shift registers
 uint8_t shiftReg[4] = {0,0,0,0};
 
@@ -51,6 +56,8 @@ extern int batteryValue;
 extern boolean lowVoltage;
 extern boolean isTimeout;
 extern int timeoutCnt;
+extern uint32_t myaddr_high;
+extern uint32_t myaddr_low;
 
 /**
  * Initialize the display
@@ -66,11 +73,21 @@ void Display_Init() {
   digitalWrite(SCLK_Pin, LOW);
   digitalWrite(SLATCH_Pin, LOW);
   
+  // Pins for Display test. P11 (D3)=Low, P12 (D2)=Inpul Pullup
+  pinMode(OUT_LOW_Pin, OUTPUT); 
+  digitalWrite(OUT_LOW_Pin, LOW);
+  pinMode(DISP_TEST_Pin, INPUT); 
+  digitalWrite(DISP_TEST_Pin, HIGH);
+  
   // Clear display
   Display_Clear();
   
-  // Test the display
-  Display_Test();
+  // Don't show startup information after timeout reset
+  if (!wasTimeoutReset) {
+    // Test the display
+    Display_Startup();
+  }
+  
 }
 
 /**
@@ -156,11 +173,17 @@ void Display_Number(int nr) {
 }
 
 /**
- * Display self test
+ * Display startup information test
  *
  */
-void Display_Test(void) {
+void Display_Startup(void) {
   
+  Display_Clear();
+  delay(500);
+  
+  // Show the version number
+  Display_Number(SW_VERSION);
+  delay(2000);
   Display_Clear();
   delay(500);
   
@@ -168,16 +191,43 @@ void Display_Test(void) {
   Power_ReadVoltage();
   Display_Number(batteryValue);
   delay(1000);
-  
   Display_Clear();
   delay(500);
-
-  // Show the version number
-  Display_Number(SW_VERSION);
-  delay(2000);
-
-  Display_Clear();
   
+  // Show the power setpoint number
+  Display_Number(Radio_GetPowerSetpoint());
+  delay(2000);
+  Display_Clear();
+  delay(500);
+  
+}
+
+/**
+ * Show additional information and test the display
+ *
+ */
+void Display_Test(void) {
+  int i,ii;
+   
+  // Test each segment/ each bit of the 4 8-bit shift registers
+  for (i=0; i<4; i++) {
+    shiftReg[i] = 1;
+
+    for (ii=0; ii<8; ii++) {
+      Display_WriteAll();
+      delay(500);
+      shiftReg[i] <<= 1;
+    }
+    shiftReg[i] = 0;
+  }
+  
+  // Show the serial address of this XBee module
+  Display_ShowAddr(myaddr_high);
+  Display_ShowAddr(myaddr_low);
+  
+  Display_Clear();
+  delay(1000);
+  Display_BlinkAll();
 }
 
 /**
@@ -209,4 +259,9 @@ void Display_ShowAddr(uint32_t addr) {
 void Display_Task_100ms() {
    // Update the display 
    Display_WriteAll();
+   
+   // Start the display test?
+   if (digitalRead(DISP_TEST_Pin) == 0) {
+     Display_Test();
+   }
 }

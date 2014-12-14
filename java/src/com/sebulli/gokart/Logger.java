@@ -45,11 +45,11 @@ public class Logger {
 	 */
 	private Logger() {
 		log("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " "
-				+ System.getProperty("os.version"));
+				+ System.getProperty("os.version"), false);
 
 		log("Java: " + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + " "
-				+ System.getProperty("java.home"));
-		log("Language: " + Locale.getDefault());
+				+ System.getProperty("java.home"), false);
+		log("Language: " + Locale.getDefault(), false);
 	}
 
 	/**
@@ -72,8 +72,8 @@ public class Logger {
 	 * @param line
 	 *            The new message
 	 */
-	public void logText(String line, char startend) {
-		
+	public void logText(String line, char startend, boolean asError) {
+
 		if (((startend == ' ') || (startend == 's')) && (!newLine)) {
 			line = "\n" + line;
 		}
@@ -85,7 +85,10 @@ public class Logger {
 		}
 		
 		// Output also to the console
-		System.out.print(line);
+		if (asError)
+			System.err.print(line);
+		else
+			System.out.print(line);
 		
 		text += line;
 
@@ -100,52 +103,66 @@ public class Logger {
 	}
 	
 	public void logStart(String line) {
-		logText(line, 's');
+		logText(line, 's', false);
 	}
 
 	public void logEnd(String line) {
-		logText(line, 'e');
+		logText(line, 'e', false);
 	}
 	
 	public void logMiddle(String line) {
-		logText(line, 'm');
+		logText(line, 'm', false);
 	}
 	
-	public void log(String line) {
-		logText(line, ' ');
+	public void log(String line , boolean asError) {
+		logText(line, ' ', asError);
 	}
 	
 	public void log(String line, Exception e) {
-		log(line);
+		log(line, true);
 		e.printStackTrace();
+	}
+	
+	public void log(String line) {
+		log(line, false);
 	}
 
 	public void info(String line) {
 		if (isInfoEnabled())
-			log(line);
+			log(line, false);
 	}
 	public void debug(String line) {
 		if (isDebugEnabled())
-			log(line);
+			log(line, false);
 	}
 	public void debug(StringBuilder stringBuilder) {
 		if (isDebugEnabled())
-			log(stringBuilder.toString());
+			log(stringBuilder.toString(), false);
 	}
 	public void warn(String line) {
-		log(line);
+		log(line, false);
 	}
 	public void warn(String line, Exception e) {
 		log(line, e);
 	}
 	public void warn(String line, Throwable th) {
-		log(line);
+		log(line, false);
 	}
 	public void error(String line) {
-		log(line);
+		log(line, true);
 	}
 	public void error(String line, Exception e) {
 		log(line, e);
+	}
+	public void error(Exception e) {
+		if (e.getMessage() != null)
+			log(e.getMessage());
+		else if (!e.toString().isEmpty())
+			log(e.toString());
+		else {
+			log ("Exception");
+			e.printStackTrace();
+		}
 	}
 	public boolean isInfoEnabled() {
 		return false;

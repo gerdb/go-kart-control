@@ -45,6 +45,7 @@ public class InputStreamThread implements Runnable {
 	private Thread thread;
 	private ExecutorService listenerPool;
 	private volatile boolean done = false;
+	private volatile boolean ignoreRX = false;
 	private final XBeeConnection connection;
 	private XBeeConfiguration conf;
 	
@@ -132,20 +133,21 @@ public class InputStreamThread implements Runnable {
 						log.debug("About to read from input stream");
 						val = connection.getInputStream().read();
 						log.debug("Read " + ByteUtils.formatByte(val) + " from input stream");
-						
-						if (val == XBeePacket.SpecialByte.START_BYTE.getValue()) {
-							packetStream = new PacketParser(connection.getInputStream());
-							response = packetStream.parsePacket();
-							
-							if (log.isInfoEnabled()) {
-								log.info("Received packet from XBee: " + response);	
-								log.debug("Received packet: int[] packet = {" + ByteUtils.toBase16(response.getRawPacketBytes(), ", ") + "};");	
+						if (!ignoreRX) {
+							if (val == XBeePacket.SpecialByte.START_BYTE.getValue()) {
+								packetStream = new PacketParser(connection.getInputStream());
+								response = packetStream.parsePacket();
+								
+								if (log.isInfoEnabled()) {
+									log.info("Received packet from XBee: " + response);	
+									log.debug("Received packet: int[] packet = {" + ByteUtils.toBase16(response.getRawPacketBytes(), ", ") + "};");	
+								}
+								
+								// success
+								this.addResponse(response);
+							} else {
+								log.warn("expected start byte but got this " + ByteUtils.toBase16(val) + ", discarding");
 							}
-							
-							// success
-							this.addResponse(response);
-						} else {
-							log.warn("expected start byte but got this " + ByteUtils.toBase16(val) + ", discarding");
 						}
 					} else {
 						//log.debug("No data available.. waiting for new data event");
@@ -166,6 +168,19 @@ public class InputStreamThread implements Runnable {
 					if (e instanceof InterruptedException) throw ((InterruptedException)e);
 					
 					log.error("Error while parsing packet:", e);
+					
+					if (connection != null) {
+						connection.close();
+					}
+					
+					if (listenerPool != null) {
+						try {
+							listenerPool.shutdownNow();
+						} catch (Throwable t) {
+							log.warn("Failed to shutdown listner thread pool", t);
+						}
+					}
+					done = true;
 					
 					if (e instanceof IOException) {
 						// this is thrown by RXTX if the serial device unplugged while we are reading data; if we are waiting then it will waiting forever
@@ -194,6 +209,14 @@ public class InputStreamThread implements Runnable {
 		log.info("InputStreamThread is exiting");
 	}
 
+	/**
+	 * ignore the received data
+	 * @param ignoreRX
+	 */
+	public void setIgnoreRX(boolean ignoreRX) {
+		this.ignoreRX = ignoreRX;
+	}
+	
 	public void setDone(boolean done) {
 		this.done = done;
 	}

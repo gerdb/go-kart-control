@@ -67,11 +67,13 @@ public class Communication {
 	private boolean received = false;
 	private int waitRxCnt = 0;
 	private int repeat = 1;
+	private int powerLevel = 0;
 	private int repeatCnt = 0;
 	static XBee xbee = new XBee();
 	private int cycleTimeout;
 	private int ncycleTimeout;
 	private boolean toggle = false;
+	private boolean doReset = false;
 
 	/**
 	 * Communication module Start the cyclic task
@@ -110,6 +112,12 @@ public class Communication {
 		if (repeat<1)
 			repeat = 1;
 
+		powerLevel = Config.getInstance().getPropertyAsInt("communication.power");
+		if (powerLevel<0)
+			powerLevel = 0;
+		if (powerLevel>4)
+			powerLevel = 4;
+		
 		// Read the parameter communication.pause and scale it to 100ms units
 		panels_amount = Config.getInstance().getPropertyAsInt("panels.amount");
 		if (panels_amount < 1)
@@ -158,41 +166,30 @@ public class Communication {
 		return ret;
 	}
 
+	@SuppressWarnings("deprecation")
 	public ReceiveData exchangeData(TransmitData txdata) {
 
 		switch (commState) {
 
 		case Initialize:
 			panel_index = 1;
+			commState = CommState.CycleStart;
+
+			break;
+
+			
+		case CycleStart:
+			
 			if (portOpened) {
-				commState = CommState.SetPower;
+				if (Enabled.get(panel_index)) {
+					commState = CommState.TransmitData;
+					repeatCnt = 0;
+				}
+				else
+					commState = CommState.NextPanel;
 			}
 			break;
-
-		// Set the power of this module
-		case SetPower:
 			
-			if (Enabled.get(panel_index)) {
-				try {
-					xbee.sendSynchronous(new AtCommand("PL", txdata.getPowerValue(panel_index)));
-				} catch (XBeeTimeoutException e) {
-					Logger.getLogger().error(e.getMessage());
-				} catch (XBeeException e) {
-					Logger.getLogger().error(e.getMessage());
-				}
-				commState = CommState.TransmitData;
-			} else {
-				//Logger.getLogger().log(panelNames.get(panel_index) + " skipped");
-				// Next panel
-				panel_index++;
-				if (panel_index > panels_amount) {
-					panel_index = 1;
-				}
-			}
-			
-			repeatCnt = 0;
-
-			break;
 
 		// Exchange the data
 		case TransmitData:
@@ -212,7 +209,7 @@ public class Communication {
 			payload[3] = txdata.getDisplayValue()[1]; // Display middle
 			payload[4] = txdata.getDisplayValue()[2]; // Display right
 			payload[5] = txdata.getFlagValue();       // Status LEDs
-			payload[6] = txdata.getPowerValue(panel_index); // Power
+			payload[6] = 0; // reserved
 			payload[7] = cycleTimeout; // Timeout in 10ms 
 			payload[8] = 0; // reserved
 			payload[9] = 0; // reserved
@@ -232,9 +229,12 @@ public class Communication {
 					Logger.getLogger().debug("Error sending to XBee module:" + destination);
 				}
 			} catch (XBeeTimeoutException e) {
-				Logger.getLogger().error(e.getMessage());
+				Logger.getLogger().error("Tx: XBeeTimeoutException");
+				
+				// Reset the module, because of error during sending
+				doReset = true;
 			} catch (XBeeException e) {
-				Logger.getLogger().error(e.getMessage());
+				Logger.getLogger().error("Tx: XBeeException");
 			}
 			waitRxCnt = 0;
 			commState = CommState.WaitRX;
@@ -243,16 +243,16 @@ public class Communication {
 		// Get the signal strength indicator
 		case WaitRX:
 			waitRxCnt ++;
-			if (waitRxCnt >= 1)
+			if (waitRxCnt >= 1) {
 				commState = CommState.GetRSSI;
+			}
 			break;
 			
 		// Get the signal strength indicator
 		case GetRSSI:
 
-				
 			// Try it again
-			if ((repeatCnt < repeat) && !(received && (rssi_panel_index == panel_index))) {
+			if ((repeatCnt < repeat) && !(received && (rssi_panel_index == panel_index)) && !doReset) {
 				commState = CommState.TransmitData;
 			} else {
 				
@@ -264,9 +264,9 @@ public class Communication {
 						//xbee.sendSynchronous(new AtCommand("RC", 0));
 						xbee.sendSynchronous(new AtCommand("DB"));
 					} catch (XBeeTimeoutException e) {
-						Logger.getLogger().error(e.getMessage());
+						Logger.getLogger().error("DB: XBeeTimeoutException");
 					} catch (XBeeException e) {
-						Logger.getLogger().error(e.getMessage());
+						Logger.getLogger().error("DB: XBeeException");
 					}
 					Logger.getLogger().logEnd("✓");
 				} else {
@@ -275,18 +275,22 @@ public class Communication {
 					Logger.getLogger().logEnd("?");
 				}
 				
-				// Next panel
-				panel_index++;
-				if (panel_index > panels_amount) {
-					panel_index = 1;
-					wait_counter = 0;
-					commState = CommState.Wait;
-				} else {
-					commState = CommState.SetPower;
-				}
+				commState = CommState.NextPanel;
 			}
-			
 
+			break;
+
+		// Select the next panel
+		case NextPanel:			
+			// Next panel
+			panel_index++;
+			if ((panel_index > panels_amount) || doReset) {
+				panel_index = 1;
+				wait_counter = 0;
+				commState = CommState.Wait;
+			} else {
+				commState = CommState.CycleStart;
+			}
 			break;
 
 		// Make a break between 2 communication cycles and wait
@@ -296,10 +300,31 @@ public class Communication {
 
 			if (wait_counter > communication_pause || newValues) {
 				newValues = false;
-				commState = CommState.Initialize;
+				
+				// Is a reset necessary ?
+				if (doReset)
+					commState = CommState.Reset;
+				else
+					commState = CommState.Initialize;
 			}
 
 			break;
+			
+		// Reset the XBee module and restart it
+		case Reset:
+			try {
+				Logger.getLogger().log(_("Resetting the XBee module"));
+				xbee.reset();
+				xbee.setAP2Mode();
+				xbee.sendAtCommand(new AtCommand("PL", powerLevel));
+				doReset = false;
+			} catch (XBeeException e) {
+				Logger.getLogger().error(_("Error resetting the XBee module"));
+			}
+			commState = CommState.Initialize;
+			break;
+				
+				
 		default:
 			break;
 
@@ -318,9 +343,9 @@ public class Communication {
 		}
 
 		if (response.getApiId() == ApiId.RX_16_RESPONSE) {
-			Logger.getLogger().log("Received RX 16 packet " + ((RxResponse16) response));
+			Logger.getLogger().info("Received RX 16 packet " + ((RxResponse16) response));
 		} else if (response.getApiId() == ApiId.RX_64_RESPONSE) {
-			Logger.getLogger().log("Received RX 64 packet " + ((RxResponse64) response));
+			Logger.getLogger().info("Received RX 64 packet " + ((RxResponse64) response));
 		} else if (response.getApiId() == ApiId.ZNET_RX_RESPONSE) {
 			ZNetRxResponse  znetRxResponse = (ZNetRxResponse)response;
 			XBeeAddress64 rxRemAddr64 = znetRxResponse.getRemoteAddress64();
@@ -358,7 +383,7 @@ public class Communication {
 			}
 		} else if (response.getApiId() == ApiId.TX_STATUS_RESPONSE) {
 		} else {
-			Logger.getLogger().log("Ignoring mystery packet " + response.toString());
+			Logger.getLogger().info("Ignoring mystery packet " + response.toString());
 		}
 		
 
@@ -377,10 +402,12 @@ public class Communication {
 	/**
 	 * Opens the communication and initializes the XBee module
 	 */
+	@SuppressWarnings("deprecation")
 	public void open() {
 
 		try {
 			xbee.open(portName, 9600);
+			xbee.sendAtCommand(new AtCommand("PL", powerLevel));
 			xbee.addPacketListener(new PacketListener() {
 
 				@Override
@@ -390,7 +417,7 @@ public class Communication {
 			});
 			portOpened = true;
 		} catch (Exception e2) {
-			Logger.getLogger().error(e2.getMessage());
+			Logger.getLogger().error(e2);
 		}
 
 	}
@@ -399,8 +426,13 @@ public class Communication {
 	 * Close the communication
 	 */
 	public void close() {
-		if (xbee.isConnected())
-			xbee.close();
+		try {
+			if (xbee.isConnected()) {
+				xbee.close();
+			}
+		} catch (IllegalStateException e ) {
+			System.exit(0);
+		}
 	}
 
 	

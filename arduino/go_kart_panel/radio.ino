@@ -22,6 +22,9 @@
 // https://code.google.com/p/xbee-arduino/
 #include <XBee.h>
 
+// Power setpoint from 0 to 4  (0=1mW, 1=23mW, 2=100mW, 3=158mW, 4=316mW)
+#define POWER_SETPOINT 4
+
 // Address of the master module
 #define MASTER_ADDR_HIGH 0x0013A200
 #define MASTER_ADDR_LOW  0x40A28DB6
@@ -43,29 +46,33 @@ XBeeAddress64 addr64 = XBeeAddress64(MASTER_ADDR_HIGH, MASTER_ADDR_LOW);
 XBeeAddress64 rxaddr64;
 ZBTxRequest zbTx = ZBTxRequest(addr64, txData, sizeof(txData));
 
-uint8_t RFPower = 0;
-uint8_t RFPowerOld = 0;
+int RFPower = -1;
 
-boolean sendBack = false;
 
 // AT commands
 uint8_t plCmd[] = {'P','L'};
 uint8_t plVal[] = {'4'};
 uint8_t shCmd[] = {'S','H'};
 uint8_t slCmd[] = {'S','L'};
-AtCommandRequest atPLRequest = AtCommandRequest(plCmd, plVal , sizeof(plVal));
-AtCommandRequest atSHRequest = AtCommandRequest(shCmd);
-AtCommandRequest atSLRequest = AtCommandRequest(slCmd);
+uint8_t wrCmd[] = {'W','R'};
+AtCommandRequest atPLSetRequest = AtCommandRequest(plCmd, plVal , sizeof(plVal));
+AtCommandRequest atPLGetRequest = AtCommandRequest(plCmd);
+AtCommandRequest atSHGetRequest = AtCommandRequest(shCmd);
+AtCommandRequest atSLGetRequest = AtCommandRequest(slCmd);
+AtCommandRequest atWRRequest    = AtCommandRequest(wrCmd);
 
 // global variables
 extern uint8_t shiftReg[4];
 
+boolean sendWRRequest = false;
 
 /**
  * Initialize the radio
  *
  */
 void Radio_Init() { 
+  
+
   
   // Open the serial port to the XBee device
   Serial1.begin(9600);
@@ -81,16 +88,16 @@ void Radio_Init() {
   
   xbee.setSerial(Serial1);
   
-  // Start with maximum power until we receive something
-  Radio_SetMaxPwr();
+  // Read the power settings
+  xbee.send(atPLGetRequest);
   
-  // Show own address only when battery voltage is 10V +- 0.5V
-  if ( (batteryValue >= 95)  && (batteryValue <= 105))
-    xbee.send(atSHRequest);
-  else
+  // Read the address
+  xbee.send(atSHGetRequest);
+  
+  // Indicates "ready"
+  if (!wasTimeoutReset)
     Display_BlinkAll();
-  
-      
+     
 }
 
 /**
@@ -106,20 +113,49 @@ void Radio_Task() {
       // Received an AT response
       if (xbee.getResponse().getApiId() == AT_RESPONSE) {
         xbee.getResponse().getAtCommandResponse(rxAT);
+        if ((rxAT.getCommand()[0] == 'P') && (rxAT.getCommand()[1] == 'L')) {
+          // not red yet
+          if (RFPower == -1) {
+            
+            // What is the power value setting in the module?
+            RFPower = rxAT.getValue()[0];
+            
+            // It differes from the setpoint
+            if (RFPower != POWER_SETPOINT) {
+              
+              // So set the new value
+              plVal[0] = POWER_SETPOINT;
+              atPLSetRequest.setCommand(plCmd);
+              atPLSetRequest.setCommandValue(plVal);
+              atPLSetRequest.setCommandValueLength(sizeof(plVal));
+              // send the AT command
+              xbee.send(atPLSetRequest);
+              sendWRRequest = true;
+            }
+          } else {
+            
+            // Send a WR to store the power setting
+            if (sendWRRequest) {
+              xbee.send(atWRRequest);
+              sendWRRequest = false;
+            }
+
+          }  
+          
+        }
+        
+        // Get the serial number
         if (rxAT.getCommand()[0] == 'S') {
           
           // AT SH serial high
           if (rxAT.getCommand()[1] == 'H') {
             myaddr_high = Radio_GetLongVal(rxAT.getValue());
-            xbee.send(atSLRequest);
+            xbee.send(atSLGetRequest);
           }
 
           // AT SL serial low
           if (rxAT.getCommand()[1] == 'L') {
             myaddr_low = Radio_GetLongVal(rxAT.getValue());
-            Display_ShowAddr(myaddr_high);
-            Display_ShowAddr(myaddr_low);
-            Display_BlinkAll();
           }
         } 
         
@@ -138,69 +174,40 @@ void Radio_Task() {
           
             // is it a valid data packet ?
             if (  (rx.getData(0) == 0x55) && (rx.getData(1) == 0xAA) ) {
+                   
+              // Reset timeoutcounter
+              timeoutCnt = 0;
                
-                 // Reset timeoutcounter
-                 timeoutCnt = 0;
+              // Get the display data
+              shiftReg[0] = rx.getData(2);
+              shiftReg[1] = rx.getData(3);
+              shiftReg[2] = rx.getData(4);
+              shiftReg[3] = rx.getData(5);
                
-                 // Get the display data
-                 shiftReg[0] = rx.getData(2);
-                 shiftReg[1] = rx.getData(3);
-                 shiftReg[2] = rx.getData(4);
-                 shiftReg[3] = rx.getData(5);
-               
-                 // get the RFPower setpoint
-                 RFPower = rx.getData(6);
-               
-                 // Get an new timeout value
-                 if (rx.getData(7) == 0) // 0 is not valid. Use at least 10sec
-                   timeout = 100;
-                 else
-                   timeout = 100 * (int)rx.getData(7);
-                 
-                 sendBack = true;  
+    
+              // Get an new timeout value
+              if (rx.getData(7) < 10) // 0..9 is not valid. Use at least 100sec
+                timeout = 1000;
+              else
+                timeout = 100 * (int)rx.getData(7);
+              
+              // Send back a response   
+              txData[2] = shiftReg[0];
+              txData[3] = shiftReg[1];
+              txData[4] = shiftReg[2];
+              txData[5] = shiftReg[3];
+              txData[6] = 0;
+              txData[7] = batteryValue;
+      
+              // Send the data now
+              xbee.send(zbTx);
                  
             }
           }
         }
-        
       }
     } 
-    // Some changes in RF power setpoint ?
-    if (RFPower != RFPowerOld) {
-        
-        // Set the new power value
-        if (RFPower <= 4) {
-          plVal[0] = RFPower;
-          atPLRequest.setCommand(plCmd);
-          atPLRequest.setCommandValue(plVal); 
-          atPLRequest.setCommandValueLength(sizeof(plVal)); 
-          // send the AT command
-          xbee.send(atPLRequest);
-        }
-        
-        RFPowerOld = RFPower;
-    }
     
-    // Send a response back to the sender
-    if (sendBack) {
-      txData[2] = shiftReg[0];
-      txData[3] = shiftReg[1];
-      txData[4] = shiftReg[2];
-      txData[5] = shiftReg[3];
-      txData[7] = batteryValue;
-      
-      // Send the data now
-      xbee.send(zbTx);
-      sendBack = false;
-    }
-}
-
-/**
- * Set the power to the maximum value
- *
- */
-void Radio_SetMaxPwr() {
-  RFPower = 4; // 4=316mW
 }
 
 /**
@@ -215,4 +222,13 @@ uint32_t Radio_GetLongVal(uint8_t* bytes) {
     val |= bytes[i];
   }
   return val;
+}
+
+
+/**
+ * Geter for the setpoint value
+ *
+ */
+int Radio_GetPowerSetpoint() {
+  return POWER_SETPOINT;
 }

@@ -52,7 +52,7 @@ public class RxTxSerialComm implements XBeeConnection, SerialPortEventListener {
 	private InputStream inputStream;
 	private OutputStream outputStream;
 
-	private SerialPort serialPort;
+	public SerialPort serialPort;
 	
 	public RxTxSerialComm() {
 	

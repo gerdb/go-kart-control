@@ -28,7 +28,7 @@ battery.full  : 13.5
 
 # Signal strength indicator
 # Unit is dbm
-signal.poor : -120
+signal.poor : -110
 signal.good : -60
 
 

@@ -85,7 +85,7 @@ public class Gui implements ActionListener {
 		this.com = pcom;
 
 		// Generate the main frame
-		JFrame frame = new JFrame("Go-Kart Control V1.1.0");
+		JFrame frame = new JFrame("Go-Kart Control V1.2.0");
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
 		frame.addWindowListener(new WindowAdapter() {
@@ -120,7 +120,6 @@ public class Gui implements ActionListener {
 					.getPropertyAsInt("panels." + i + ".y"));
 			gokartPanel.setSerialNumber(Config.getInstance().getProperty("panels." + i + ".serial"));
 			gokartPanels.add(gokartPanel);
-			txdata.setPowerValue(i, Config.getInstance().getPropertyAsInt("panels." + i + ".power"));
 			gokartPanel.setVisible(Config.getInstance().getPropertyAsIntIfExists("panels." + i + ".enabled", 1) == 1);
 			panel.add(gokartPanel);
 		}

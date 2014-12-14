@@ -8,7 +8,7 @@ locale :
 
 # Set to 1, if main window should be always on top.
 # Else set it to 0.
-window.ontop : 1
+window.ontop : 0
 
 # Set serial port
 # For Windows it's something like COM1. See device manager.
@@ -28,7 +28,7 @@ battery.full  : 13.5
 
 # Signal strength indicator
 # Unit is dbm
-signal.poor : -120
+signal.poor : -110
 signal.good : -60
 
 
@@ -41,10 +41,13 @@ button.send.clear : all
 
 
 # Time in seconds between 2 cycles of communicate with all panels
-communication.pause : 5
+communication.pause : 0
 
 # How many times should a transmission be repeated
 communication.repeat : 3
+
+# Set the power level from 0 .. 4  (0=1mW, 1=23mW, 2=100mW, 3=158mW, 4=316mW)
+communication.power : 4
 
 # If a panel does not receive a signal during this amount of cycles, the display is switched off
 communication.timeout : 3
@@ -57,7 +60,6 @@ panels.amount : 6
 # .serial Radio serial number high and low
 # .x       X-position
 # .y       Y-position
-# .power   0 .. 4  (0=1mW, 1=23mW, 2=100mW, 3=158mW, 4=316mW)
 # .vcorr   Battery voltage calibration value. (default: 1.00000)
 # .enabled 1, if module is active, 0 if not
 
@@ -65,7 +67,6 @@ panels.1.name    : 001
 panels.1.serial  : 0013A200 40A28F4A
 panels.1.x       : 30
 panels.1.y       : 420
-panels.1.power   : 0
 panels.1.vcorr   : 0.995
 panels.1.enabled : 1
 
@@ -73,7 +74,6 @@ panels.2.name    : 002
 panels.2.serial  : 0013A200 40A28F4B
 panels.2.x       : 690
 panels.2.y       : 380
-panels.2.power   : 0
 panels.2.vcorr   : 1.00
 panels.2.enabled : 1
 
@@ -81,7 +81,6 @@ panels.3.name    : 003
 panels.3.serial  : 0013A200 00000000
 panels.3.x       : 450
 panels.3.y       : 300
-panels.3.power   : 0
 panels.3.vcorr   : 0.995
 panels.3.enabled : 0
 
@@ -89,7 +88,6 @@ panels.4.name    : 004
 panels.4.serial  : 0013A200 00000000
 panels.4.x       : 230
 panels.4.y       : 5
-panels.4.power   : 0
 panels.4.vcorr   : 0.995
 panels.4.enabled : 0
 
@@ -97,7 +95,6 @@ panels.5.name    : 005
 panels.5.serial  : 0013A200 00000000
 panels.5.x       : 140
 panels.5.y       : 320
-panels.5.power   : 0
 panels.5.vcorr   : 0.995
 panels.5.enabled : 0
 
@@ -105,6 +102,5 @@ panels.6.name    : 006
 panels.6.serial  : 0013A200 00000000
 panels.6.x       : 60
 panels.6.y       : 20
-panels.6.power   : 0
 panels.6.vcorr   : 1.015
 panels.6.enabled : 0

@@ -38,14 +38,13 @@ The differences between both electronics are marked here:
 ![screenshot](https://raw.githubusercontent.com/gerdb/go-kart-control/master/pics/pcb1.jpg)
 
 ###Master module
-The master module is connected to a USB port of a PC or notebook. The master module can be supplied by USB or by an external 12V power supply.
-Configure new XBee modules with the XCPU http://www.digi.com/support/productdetail?pid=3553&type=utilities software. Set the AP value to 2 and note the serial number (high and low). This number is necessary for the panel modules. 
+The master module is connected to a USB port of a PC or notebook. The master module can be supplied by USB or by an external 12V power supply. An external power supply is recommended on high power settings (If not, the blue LED is flickering). 
 
 ###Panel module
 If there is a new master module, update the radio.ino file with the master's XBee address and download it to all panel modules. The panels will only accept data from this master.   
-If a panel module is connected to 12V, the battery voltage and the software version are displayed on startup.  
-After the XBee module is initialized, all the LED segments are turned on for a short time. Now the module is ready.  
-If the panel module is supplied with a voltage of 10V +- 0.5V the XBee address is displayed step by step. Use this address to update the **settings.txt**  
+On startup, the software version, the battery voltage (120=12V) and the power setting (0..4) is displayed.  
+The XBee module is ready when all LEDs blink for a short time.  
+If then the testpoint P11 and P12 are connected together, the module displays the XBee address step by step and a display test is performed. Use this address to update the **settings.txt**  
 
 Use 7-segment displays with common anode. Voltage is 12V. Use external resistors in each line **a**..**g**  
 Connect LEDs to display the flag status. Connect the anode together.  

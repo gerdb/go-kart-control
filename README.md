@@ -10,6 +10,7 @@ https://github.com/gerdb/go-kart-control/archive/master.zip
 On a windows system just start the executable **Go-Kart-Control.exe** in /install/win32 or win64  
 On a Mac or Linux start the java JAR archive in install/all with **java - jar go-kart-control.jar**.  
 Don't forget to set the correct serial port in settings.txt.  
+Java must be installed: https://www.java.com/de/download/  
 
 ##Translation
 You can translate the application.  
